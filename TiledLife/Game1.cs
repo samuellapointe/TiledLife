@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TiledLife.World;
 
 namespace TiledLife
 {
@@ -12,10 +13,17 @@ namespace TiledLife
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Map map;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            this.IsFixedTimeStep = false;
+            this.graphics.SynchronizeWithVerticalRetrace = false;
+
+            map = new Map();
         }
 
         /// <summary>
@@ -23,11 +31,14 @@ namespace TiledLife
         /// This is where it can query for any required services and load any non-graphic
         /// related content.  Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
+        /// Example: World generation
         /// </summary>
         protected override void Initialize()
         {
+
             // TODO: Add your initialization logic here
 
+            map.Initialize();
             base.Initialize();
         }
 
@@ -64,6 +75,7 @@ namespace TiledLife
 
             // TODO: Add your update logic here
 
+            map.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -74,6 +86,10 @@ namespace TiledLife
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin();
+            map.Draw(spriteBatch, gameTime);
+            spriteBatch.End();
 
             // TODO: Add your drawing code here
 
