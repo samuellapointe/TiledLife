@@ -14,6 +14,7 @@ namespace TiledLife
         SpriteBatch spriteBatch;
 
         Map map;
+        MapViewer mapViewer;
 
         public Game1()
         {
@@ -22,8 +23,13 @@ namespace TiledLife
 
             this.IsFixedTimeStep = false;
             this.graphics.SynchronizeWithVerticalRetrace = false;
+            this.IsMouseVisible = true;
+
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
 
             map = new Map();
+            mapViewer = new MapViewer(map);
         }
 
         /// <summary>
@@ -73,8 +79,13 @@ namespace TiledLife
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            // Handle inputs
+            // Mouse
+            MouseState mouseState = Mouse.GetState();
+            mapViewer.UpdateMouseState(mouseState);
 
+            // Update classes
+            mapViewer.Update(gameTime);
             map.Update(gameTime);
             base.Update(gameTime);
         }
@@ -85,11 +96,9 @@ namespace TiledLife
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin();
-            map.Draw(spriteBatch, gameTime);
-            spriteBatch.End();
+            mapViewer.Draw(spriteBatch, gameTime);
 
             // TODO: Add your drawing code here
 

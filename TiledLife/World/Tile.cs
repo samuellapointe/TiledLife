@@ -41,7 +41,8 @@ namespace TiledLife.World
                 }
                 texture.SetData<Color>(colorData);
             }
-            spriteBatch.Draw(texture, position);
+            Vector2 offset = new Vector2(size.X * position.X, size.Y * position.Y);
+            spriteBatch.Draw(texture, offset);
         }
     }
 }
