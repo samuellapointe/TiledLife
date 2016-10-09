@@ -17,13 +17,23 @@ namespace TiledLife.World
 
         int height;
         int width;
+        int pixelsPerMeter;
+        int imageWidth;
+        int imageHeight;
+
+        bool viewGrid;
 
         public Tile(Vector2 position)
         {
             this.position = position;
 
-            height = 1000;
-            width = 1000;
+            height = 100;
+            width = 100;
+            pixelsPerMeter = 10;
+            imageWidth = width * pixelsPerMeter;
+            imageHeight = height * pixelsPerMeter;
+
+            viewGrid = false;
 
             size = new Vector2(width, height);
             random = new Random();
@@ -52,13 +62,19 @@ namespace TiledLife.World
         {
             if (texture == null)
             {
-                texture = new Texture2D(spriteBatch.GraphicsDevice, (int)size.X, (int)size.Y);
-
-                int nbPixels = width * height;
+                texture = new Texture2D(spriteBatch.GraphicsDevice, imageWidth, imageHeight);
+                int nbPixels = imageWidth * imageHeight;
                 Color[] colorData = new Color[nbPixels];
+
                 for (int i = 0; i < nbPixels; i++)
                 {
-                    colorData[i] = new Color(random.Next(60, 80), random.Next(40, 60), 0);
+                    if (viewGrid && (i % pixelsPerMeter == 0 || Math.Floor((float)i/(float)imageWidth) % pixelsPerMeter == 0))
+                    {
+                        colorData[i] = new Color(40, 40, 40);
+                    } else
+                    {
+                        colorData[i] = new Color(random.Next(50, 60), random.Next(30, 40), 0);
+                    }
                 }
                 texture.SetData<Color>(colorData);
             }

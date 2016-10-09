@@ -10,6 +10,7 @@ namespace TiledLife.World.Creature
         float maxHealth = 100f;
         float maxHunger = 100f;
         float maxEnergy = 100f;
+        float maxSpeed = 10f;
 
         Texture2D texture;
 
@@ -38,7 +39,7 @@ namespace TiledLife.World.Creature
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            spriteBatch.Draw(texture, position);
+            spriteBatch.Draw(texture, position, null, null, null, 0, new Vector2(0.25f, 0.25f));
         }
 
         public override void Update(GameTime gameTime)

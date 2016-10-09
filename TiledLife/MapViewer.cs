@@ -38,7 +38,17 @@ namespace TiledLife
             Matrix scaleMatrix = Matrix.CreateScale(scale);
             Matrix transformMatrix = Matrix.Multiply(scaleMatrix, translationMatrix);
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, transformMatrix);
+            SamplerState samplerState;
+
+            if (zoomLevel < -0.5)
+            {
+                samplerState = SamplerState.PointClamp;
+            } else
+            {
+                samplerState = SamplerState.LinearClamp;
+            }
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, samplerState, null, null, null, transformMatrix);
             map.Draw(spriteBatch, gameTime);
             spriteBatch.End();
         }
