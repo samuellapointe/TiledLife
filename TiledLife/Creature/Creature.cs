@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace TiledLife.World.Creature
+namespace TiledLife.Creature
 {
     abstract class Creature : GameElement
     {
@@ -34,6 +34,7 @@ namespace TiledLife.World.Creature
             set;
         }
    
+        // Needed by the game
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
         public abstract void Initialize();
         public abstract void LoadContent(ContentManager content);

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TiledLife.World.Creature;
+using TiledLife.Creature;
 
 namespace TiledLife.World
 {
@@ -55,7 +55,7 @@ namespace TiledLife.World
 
         public void Update(GameTime gameTime)
         {
-
+            sheep.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)

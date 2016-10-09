@@ -2,16 +2,19 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using TiledLife.Creature.AI;
 
-namespace TiledLife.World.Creature
+namespace TiledLife.Creature
 {
-    class Sheep : Creature
+    class Sheep : Creature, IControllable
     {
         float maxHealth = 100f;
         float maxHunger = 100f;
         float maxEnergy = 100f;
         float maxSpeed = 10f;
+        float walkSpeed = 3f;
 
+        AIController controller;
         Texture2D texture;
 
         public Sheep(Vector2 position)
@@ -20,6 +23,7 @@ namespace TiledLife.World.Creature
             hunger = 0f;
             energy = 100f;
             this.position = position;
+            controller = new AIController(this);
         }
 
         public override void Initialize()
@@ -44,7 +48,13 @@ namespace TiledLife.World.Creature
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            controller.Update(gameTime);
+        }
+
+        public void Move(Vector2 direction, GameTime gameTime)
+        {
+            direction.Normalize();
+            position += direction * walkSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }
