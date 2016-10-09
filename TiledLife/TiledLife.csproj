@@ -43,6 +43,8 @@
     <Compile Include="MapViewer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\Creature\Creature.cs" />
+    <Compile Include="World\Creature\Sheep.cs" />
     <Compile Include="World\Tile.cs" />
     <Compile Include="World\Map.cs" />
   </ItemGroup>

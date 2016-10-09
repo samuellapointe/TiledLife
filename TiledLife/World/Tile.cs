@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using TiledLife.World.Creature;
 
 namespace TiledLife.World
 {
@@ -11,13 +13,32 @@ namespace TiledLife.World
         Vector2 position;
         Random random;
 
+        Sheep sheep;
+
+        int height;
+        int width;
+
         public Tile(Vector2 position)
         {
             this.position = position;
-            size = new Vector2(1000, 1000);
+
+            height = 1000;
+            width = 1000;
+
+            size = new Vector2(width, height);
             random = new Random();
         }
         public void Initialize()
+        {
+            sheep = new Sheep(new Vector2(300, 500));
+        }
+
+        public void LoadContent(ContentManager content)
+        {
+            sheep.LoadContent(content);
+        }
+
+        public void UnloadContent()
         {
 
         }
@@ -33,16 +54,18 @@ namespace TiledLife.World
             {
                 texture = new Texture2D(spriteBatch.GraphicsDevice, (int)size.X, (int)size.Y);
 
-                Color[] colorData = new Color[(int)size.X * (int)size.Y];
-                for (int i = 0; i < colorData.GetLength(0); i++)
+                int nbPixels = width * height;
+                Color[] colorData = new Color[nbPixels];
+                for (int i = 0; i < nbPixels; i++)
                 {
-                    Color pixelColor = new Color(random.Next(0, 50), random.Next(100, 120), 0);
-                    colorData[i] = pixelColor;
+                    colorData[i] = new Color(random.Next(60, 80), random.Next(40, 60), 0);
                 }
                 texture.SetData<Color>(colorData);
             }
             Vector2 offset = new Vector2(size.X * position.X, size.Y * position.Y);
             spriteBatch.Draw(texture, offset);
+
+            sheep.Draw(spriteBatch, gameTime);
         }
     }
 }

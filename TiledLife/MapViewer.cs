@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TiledLife.World;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 
 namespace TiledLife
 {
@@ -45,6 +46,16 @@ namespace TiledLife
         public void Initialize()
         {
             throw new NotImplementedException();
+        }
+
+        public void LoadContent(ContentManager content)
+        {
+
+        }
+
+        public void UnloadContent()
+        {
+
         }
 
         public void Update(GameTime gameTime)

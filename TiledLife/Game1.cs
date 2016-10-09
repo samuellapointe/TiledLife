@@ -54,8 +54,10 @@ namespace TiledLife
         /// </summary>
         protected override void LoadContent()
         {
+            Content.RootDirectory = "Content";
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            map.LoadContent(Content);
 
             // TODO: use this.Content to load your game content here
         }
