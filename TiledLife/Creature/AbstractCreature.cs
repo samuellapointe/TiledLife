@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace TiledLife.Creature
 {
-    abstract class Creature : GameElement
+    abstract class AbstractCreature : GameElement
     {
         public float health
         {

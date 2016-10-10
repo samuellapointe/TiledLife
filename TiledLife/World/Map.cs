@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using TiledLife.Creature;
 
 namespace TiledLife.World
 {
     class Map : GameElement
     {
         List<Tile> tiles = new List<Tile>();
+        List<AbstractCreature> creatures = new List<AbstractCreature>();
 
         public Map()
         {
@@ -22,6 +24,10 @@ namespace TiledLife.World
             {
                 tile.Initialize();
             }
+            for (int i = 0; i < 10; i++)
+            {
+                creatures.Add(new Sheep(new Vector2(100 + i*10, 500)));
+            }
         }
 
         public void LoadContent(ContentManager content)
@@ -29,6 +35,10 @@ namespace TiledLife.World
             foreach (Tile tile in tiles)
             {
                 tile.LoadContent(content);
+            }
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.LoadContent(content);
             }
         }
 
@@ -38,6 +48,10 @@ namespace TiledLife.World
             {
                 tile.UnloadContent();
             }
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.UnloadContent();
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -46,6 +60,10 @@ namespace TiledLife.World
             {
                 tile.Draw(spriteBatch, gameTime);
             }
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.Draw(spriteBatch, gameTime);
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -53,6 +71,10 @@ namespace TiledLife.World
             foreach (Tile tile in tiles)
             {
                 tile.Update(gameTime);
+            }
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.Update(gameTime);
             }
         }
     }

@@ -6,13 +6,13 @@ using TiledLife.Creature.AI;
 
 namespace TiledLife.Creature
 {
-    class Sheep : Creature, IControllable
+    class Sheep : AbstractCreature, IControllable
     {
         float maxHealth = 100f;
         float maxHunger = 100f;
         float maxEnergy = 100f;
-        float maxSpeed = 10f;
-        float walkSpeed = 3f;
+        float maxSpeed = 100f;
+        float walkSpeed = 35f;
 
         AIController controller;
         Texture2D texture;
@@ -51,10 +51,14 @@ namespace TiledLife.Creature
             controller.Update(gameTime);
         }
 
-        public void Move(Vector2 direction, GameTime gameTime)
+        public void Move(Vector2 velocity, GameTime gameTime)
         {
-            direction.Normalize();
-            position += direction * walkSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public float GetWalkSpeed()
+        {
+            return walkSpeed;
         }
     }
 }

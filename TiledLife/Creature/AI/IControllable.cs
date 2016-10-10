@@ -9,5 +9,6 @@ namespace TiledLife.Creature.AI
     interface IControllable
     {
         void Move(Vector2 direction, GameTime gameTime);
+        float GetWalkSpeed();
     }
 }

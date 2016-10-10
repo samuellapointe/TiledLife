@@ -13,8 +13,6 @@ namespace TiledLife.World
         Vector2 position;
         Random random;
 
-        Sheep sheep;
-
         int height;
         int width;
         int pixelsPerMeter;
@@ -38,14 +36,15 @@ namespace TiledLife.World
             size = new Vector2(width, height);
             random = new Random();
         }
+
         public void Initialize()
         {
-            sheep = new Sheep(new Vector2(300, 500));
+ 
         }
 
         public void LoadContent(ContentManager content)
         {
-            sheep.LoadContent(content);
+
         }
 
         public void UnloadContent()
@@ -55,7 +54,7 @@ namespace TiledLife.World
 
         public void Update(GameTime gameTime)
         {
-            sheep.Update(gameTime);
+
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -80,8 +79,6 @@ namespace TiledLife.World
             }
             Vector2 offset = new Vector2(size.X * position.X, size.Y * position.Y);
             spriteBatch.Draw(texture, offset);
-
-            sheep.Draw(spriteBatch, gameTime);
         }
     }
 }

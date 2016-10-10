@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Creature\AI\Behavior\AbstractBehavior.cs" />
     <Compile Include="Creature\AI\Behavior\Wander.cs" />
     <Compile Include="Creature\AI\IControllable.cs" />
     <Compile Include="Game1.cs" />
@@ -46,7 +47,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Creature\AI\AIController.cs" />
-    <Compile Include="Creature\Creature.cs" />
+    <Compile Include="Creature\AbstractCreature.cs" />
     <Compile Include="Creature\Sheep.cs" />
     <Compile Include="World\Tile.cs" />
     <Compile Include="World\Map.cs" />
