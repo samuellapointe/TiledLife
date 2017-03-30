@@ -2,59 +2,77 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using TiledLife.Creature;
 
 namespace TiledLife.World
 {
     class Tile : GameElement
     {
+        // These should be the same for every tile on the map
+        const int TileHeight = 100;
+        const int TileWidth = 100;
+        const int PixelsPerMeter = 10;
+
+        // Position
+        int tileX;
+        int tileY;
+        Rectangle bounds;
+
+        // Some objects
         Texture2D texture;
-        Vector2 size;
-        Vector2 position;
         Random random;
 
-        int height;
-        int width;
-        int pixelsPerMeter;
+        // The size for the image
         int imageWidth;
         int imageHeight;
 
-        bool viewGrid;
+        // Creatures contained in this tile
+        List<AbstractCreature> creatures = new List<AbstractCreature>();
 
-        public Tile(Vector2 position)
+        public Tile(int tileX, int tileY)
         {
-            this.position = position;
+            this.tileX = tileX;
+            this.tileY = tileY;
 
-            height = 100;
-            width = 100;
-            pixelsPerMeter = 10;
-            imageWidth = width * pixelsPerMeter;
-            imageHeight = height * pixelsPerMeter;
+            imageWidth = TileWidth * PixelsPerMeter;
+            imageHeight = TileHeight * PixelsPerMeter;
 
-            viewGrid = false;
-
-            size = new Vector2(width, height);
+            bounds = new Rectangle(tileX, tileY, TileWidth, TileHeight);
+            
             random = new Random();
         }
 
         public void Initialize()
         {
- 
+            for (int i = 0; i < 10; i++)
+            {
+                creatures.Add(new Sheep(new Vector2(100 + i * 10, 500)));
+            }
         }
 
         public void LoadContent(ContentManager content)
         {
-
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.LoadContent(content);
+            }
         }
 
         public void UnloadContent()
         {
-
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.UnloadContent();
+            }
         }
 
         public void Update(GameTime gameTime)
         {
-
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -67,18 +85,17 @@ namespace TiledLife.World
 
                 for (int i = 0; i < nbPixels; i++)
                 {
-                    if (viewGrid && (i % pixelsPerMeter == 0 || Math.Floor((float)i/(float)imageWidth) % pixelsPerMeter == 0))
-                    {
-                        colorData[i] = new Color(40, 40, 40);
-                    } else
-                    {
-                        colorData[i] = new Color(random.Next(50, 60), random.Next(30, 40), 0);
-                    }
+                    colorData[i] = new Color(random.Next(50, 60), random.Next(30, 40), 0);
                 }
                 texture.SetData<Color>(colorData);
             }
-            Vector2 offset = new Vector2(size.X * position.X, size.Y * position.Y);
+            Vector2 offset = new Vector2(TileWidth * tileX, TileHeight * tileY);
             spriteBatch.Draw(texture, offset);
+
+            foreach (AbstractCreature creature in creatures)
+            {
+                creature.Draw(spriteBatch, gameTime);
+            }
         }
     }
 }
