@@ -10,11 +10,12 @@ namespace TiledLife.Creature
 {
     abstract class AbstractCreature : GameElement
     {
-        public float health { get; set; }
-        public float hunger { get; set; }
-        public float energy { get; set; }
+        public float health { get; protected set; }
+        public float hunger { get; protected set; }
+        public float energy { get; protected set; }
+        public float thirst { get; protected set; }
 
-        public Vector2 position { get; set; }
+        public Vector2 position { get; protected set; }
    
         // Needed by the game
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);

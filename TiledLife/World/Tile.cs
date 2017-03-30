@@ -12,7 +12,7 @@ namespace TiledLife.World
         // These should be the same for every tile on the map
         public const int TILE_HEIGHT = 100;
         public const int TILE_WIDTH = 100;
-        public const int PIXELS_PER_METER = 10;
+        public const int PIXELS_PER_METER = 8;
 
         // The blocks
         Block[,] blocks;
@@ -23,12 +23,7 @@ namespace TiledLife.World
         Rectangle bounds;
 
         // Some objects
-        Texture2D texture;
         Random random;
-
-        // The size for the image
-        int imageWidth;
-        int imageHeight;
 
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
@@ -38,9 +33,6 @@ namespace TiledLife.World
             this.tileX = tileX;
             this.tileY = tileY;
 
-            imageWidth = TILE_WIDTH * PIXELS_PER_METER;
-            imageHeight = TILE_HEIGHT * PIXELS_PER_METER;
-
             bounds = new Rectangle(tileX, tileY, TILE_WIDTH, TILE_HEIGHT);
             
             random = new Random();
@@ -49,12 +41,13 @@ namespace TiledLife.World
 
         public void Initialize()
         {
-            for (int i = 0; i < 10; i++)
+            blocks = TileGenerator.GenerateTile(random, TILE_HEIGHT, TILE_WIDTH);
+
+            for (int i = 0; i < 100; i++)
             {
                 //creatures.Add(new Sheep(new Vector2(100 + i * 10, 500)));
+                creatures.Add(new Human(GetRandomValidPosition()));
             }
-
-            blocks = TileGenerator.GenerateTile(random, TILE_HEIGHT, TILE_WIDTH);
         }
 
         public void LoadContent(ContentManager content)
@@ -94,6 +87,25 @@ namespace TiledLife.World
             {
                 creature.Draw(spriteBatch, gameTime);
             }
+        }
+
+        // Get a position for spawning, like on a block of dirt
+        public Vector2 GetRandomValidPosition()
+        {
+            int maxNbOfTries = 10;
+            int padding = 2;
+            for (int i = 0; i < maxNbOfTries; i++)
+            {
+                int x = random.Next(0, TILE_WIDTH);
+                int y = random.Next(0, TILE_HEIGHT);
+                if (blocks[y,x].CanWalkOn())
+                {
+                    return new Vector2((x * PIXELS_PER_METER) + padding, (y * PIXELS_PER_METER) + padding);
+                }
+            }
+
+            // Couldn't find a valid spawn location
+            return new Vector2(0, 0);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace TiledLife
         public MapViewer(Map map)
         {
             this.map = map;
-            zoomLevel = 2;
+            zoomLevel = 0.25f;
             offset = Vector2.Zero;
         }
 

@@ -41,6 +41,7 @@
     <Compile Include="Creature\AI\Behavior\AbstractBehavior.cs" />
     <Compile Include="Creature\AI\Behavior\Wander.cs" />
     <Compile Include="Creature\AI\IControllable.cs" />
+    <Compile Include="Creature\Human.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameElement.cs" />
     <Compile Include="MapViewer.cs" />

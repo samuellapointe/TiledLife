@@ -56,6 +56,11 @@ namespace TiledLife.World
             spriteBatch.Draw(texture, offset);
         }
 
+        public bool CanWalkOn()
+        {
+            return material.isSolid;
+        }
+
         private Color AddNoise(int amount, Color color)
         {
             int R = color.R + random.Next(-amount, amount + 1);
