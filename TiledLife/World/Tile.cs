@@ -22,9 +22,6 @@ namespace TiledLife.World
         int tileY;
         Rectangle bounds;
 
-        // Some objects
-        Random random;
-
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
 
@@ -34,14 +31,12 @@ namespace TiledLife.World
             this.tileY = tileY;
 
             bounds = new Rectangle(tileX, tileY, TILE_WIDTH, TILE_HEIGHT);
-            
-            random = new Random();
 
         }
 
         public void Initialize()
         {
-            blocks = TileGenerator.GenerateTile(random, TILE_HEIGHT, TILE_WIDTH);
+            blocks = TileGenerator.GenerateTile(TILE_HEIGHT, TILE_WIDTH);
 
             for (int i = 0; i < 100; i++)
             {
@@ -72,6 +67,16 @@ namespace TiledLife.World
             {
                 creature.Update(gameTime);
             }
+
+            // Remove dead creatures 
+            // iterate backwards to remove them from the array as we loop
+            for (int i = creatures.Count - 1; i >= 0; i--)
+            {
+                if (!creatures[i].alive)
+                {
+                    creatures.RemoveAt(i);
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -96,8 +101,8 @@ namespace TiledLife.World
             int padding = 2;
             for (int i = 0; i < maxNbOfTries; i++)
             {
-                int x = random.Next(0, TILE_WIDTH);
-                int y = random.Next(0, TILE_HEIGHT);
+                int x = RandomSingleton.GetRandom().Next(0, TILE_WIDTH);
+                int y = RandomSingleton.GetRandom().Next(0, TILE_HEIGHT);
                 if (blocks[y,x].CanWalkOn())
                 {
                     return new Vector2((x * PIXELS_PER_METER) + padding, (y * PIXELS_PER_METER) + padding);

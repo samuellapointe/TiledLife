@@ -21,14 +21,12 @@ namespace TiledLife.World
         private int blockY;
 
         private Texture2D texture;
-        private Random random;
 
-        public Block (Random random, Material material, int blockX, int blockY)
+        public Block (Material material, int blockX, int blockY)
         {
             this.material = material;
             this.blockX = blockX;
             this.blockY = blockY;
-            this.random = random;
         }
 
         private void GenerateTexture(SpriteBatch spriteBatch)
@@ -63,9 +61,9 @@ namespace TiledLife.World
 
         private Color AddNoise(int amount, Color color)
         {
-            int R = color.R + random.Next(-amount, amount + 1);
-            int G = color.G + random.Next(-amount, amount + 1);
-            int B = color.B + random.Next(-amount, amount + 1);
+            int R = color.R + RandomSingleton.GetRandom().Next(-amount, amount + 1);
+            int G = color.G + RandomSingleton.GetRandom().Next(-amount, amount + 1);
+            int B = color.B + RandomSingleton.GetRandom().Next(-amount, amount + 1);
             R = R > 255 ? 255 : R;
             R = R < 0 ? 0 : R;
             G = G > 255 ? 255 : G;

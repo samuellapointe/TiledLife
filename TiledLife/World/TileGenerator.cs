@@ -10,17 +10,16 @@ namespace TiledLife.World
 {
     static class TileGenerator
     {
-        public static Block[,] GenerateTile(Random random, int tileHeight, int tileWidth)
+        public static Block[,] GenerateTile(int tileHeight, int tileWidth)
         {
             Block[,] blocks = new Block[tileHeight, tileWidth];
             for (int i = 0; i < tileHeight; i++)
             {
                 for (int j = 0; j < tileWidth; j++)
                 {
-                    if (random.Next(20) == 0)
+                    if (RandomSingleton.GetRandom().Next(20) == 0)
                     {
                         blocks[i, j] = new Block(
-                                random,
                                 MaterialLiquid.CreateMaterial(MaterialLiquid.MaterialLiquidNames.water),
                                 j, i
                             );
@@ -28,7 +27,6 @@ namespace TiledLife.World
                     else
                     {
                         blocks[i, j] = new Block(
-                                random,
                                 MaterialSolid.CreateMaterial(MaterialSolid.MaterialSolidNames.dirt),
                                 j, i
                             );

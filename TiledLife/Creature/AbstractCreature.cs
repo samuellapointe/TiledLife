@@ -16,6 +16,7 @@ namespace TiledLife.Creature
         public float thirst { get; protected set; }
 
         public Vector2 position { get; protected set; }
+        public bool alive { get; protected set; }
    
         // Needed by the game
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
