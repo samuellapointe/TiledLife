@@ -22,13 +22,12 @@ namespace TiledLife
             Content.RootDirectory = "Content";
 
             this.IsFixedTimeStep = false;
-            this.graphics.SynchronizeWithVerticalRetrace = false;
             this.IsMouseVisible = true;
 
             graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 768;
 
-            map = new Map();
+            map = Map.GetInstance();
             mapViewer = new MapViewer(map);
         }
 

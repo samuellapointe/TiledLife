@@ -8,7 +8,7 @@ namespace TiledLife.World.Materials.Solid
 {
     class MaterialSolid : Material
     {
-        public enum MaterialSolidNames { dirt }
+        public enum MaterialSolidNames { Dirt }
 
         public MaterialSolid(Color color, string name) : base(color, name, true)
         {
@@ -19,7 +19,7 @@ namespace TiledLife.World.Materials.Solid
         {
             switch (material)
             {
-                case MaterialSolidNames.dirt:
+                case MaterialSolidNames.Dirt:
                     return new MaterialSolid(Color.SaddleBrown, "dirt");
                 default:
                     return new MaterialSolid(Color.White, "unknown solid");

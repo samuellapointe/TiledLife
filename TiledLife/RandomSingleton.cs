@@ -5,11 +5,11 @@ using System.Text;
 
 namespace TiledLife
 {
-    static class RandomSingleton
+    static class RandomGen
     {
         private static Random random;
 
-        public static Random GetRandom()
+        public static Random GetInstance()
         {
             if (random == null)
             {

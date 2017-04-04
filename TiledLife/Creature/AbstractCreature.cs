@@ -10,12 +10,15 @@ namespace TiledLife.Creature
 {
     abstract class AbstractCreature : GameElement
     {
-        public float health { get; protected set; }
-        public float hunger { get; protected set; }
-        public float energy { get; protected set; }
+        // Needs
         public float thirst { get; protected set; }
 
+        // Position
         public Vector2 position { get; protected set; }
+        public float angle { get; set; }
+        protected Vector2 scale { get; set; }
+
+        // Others
         public bool alive { get; protected set; }
    
         // Needed by the game

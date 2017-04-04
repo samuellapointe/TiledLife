@@ -8,18 +8,18 @@ namespace TiledLife.World.Materials.Liquid
 {
     class MaterialLiquid : Material
     {
-        public enum MaterialLiquidNames { water }
+        public enum MaterialLiquidNames { Water }
 
         public MaterialLiquid(Color color, string name) : base(color, name, false)
         {
-
+            
         }
 
         public static MaterialLiquid CreateMaterial(MaterialLiquidNames material)
         {
             switch (material)
             {
-                case MaterialLiquidNames.water:
+                case MaterialLiquidNames.Water:
                     return new MaterialLiquid(Color.Blue, "water");
                 default:
                     return new MaterialLiquid(Color.White, "unknown liquid");

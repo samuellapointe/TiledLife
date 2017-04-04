@@ -17,17 +17,17 @@ namespace TiledLife.World
             {
                 for (int j = 0; j < tileWidth; j++)
                 {
-                    if (RandomSingleton.GetRandom().Next(20) == 0)
+                    if (RandomGen.GetInstance().Next(20) == 0)
                     {
                         blocks[i, j] = new Block(
-                                MaterialLiquid.CreateMaterial(MaterialLiquid.MaterialLiquidNames.water),
+                                MaterialLiquid.CreateMaterial(MaterialLiquid.MaterialLiquidNames.Water),
                                 j, i
                             );
                     }
                     else
                     {
                         blocks[i, j] = new Block(
-                                MaterialSolid.CreateMaterial(MaterialSolid.MaterialSolidNames.dirt),
+                                MaterialSolid.CreateMaterial(MaterialSolid.MaterialSolidNames.Dirt),
                                 j, i
                             );
                     }

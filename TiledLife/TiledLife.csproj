@@ -38,9 +38,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Creature\AI\Behavior\AbstractBehavior.cs" />
-    <Compile Include="Creature\AI\Behavior\Wander.cs" />
-    <Compile Include="Creature\AI\IControllable.cs" />
+    <Compile Include="Creature\AI\BaseNode.cs" />
+    <Compile Include="Creature\AI\ActionRotate.cs" />
+    <Compile Include="Creature\AI\ActionDecide.cs" />
     <Compile Include="Creature\DNA.cs" />
     <Compile Include="Creature\Human.cs" />
     <Compile Include="Game1.cs" />
@@ -48,9 +48,7 @@
     <Compile Include="MapViewer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Creature\AI\AIController.cs" />
     <Compile Include="Creature\AbstractCreature.cs" />
-    <Compile Include="Creature\Sheep.cs" />
     <Compile Include="RandomSingleton.cs" />
     <Compile Include="World\Block.cs" />
     <Compile Include="World\Materials\Liquid\MaterialLiquid.cs" />
@@ -73,6 +71,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

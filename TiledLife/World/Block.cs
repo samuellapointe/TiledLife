@@ -14,8 +14,8 @@ namespace TiledLife.World
     {
         private Material material { get; }
 
-        private int width = Tile.PIXELS_PER_METER;
-        private int height = Tile.PIXELS_PER_METER;
+        private int width = Map.PIXELS_PER_METER;
+        private int height = Map.PIXELS_PER_METER;
 
         private int blockX;
         private int blockY;
@@ -61,9 +61,9 @@ namespace TiledLife.World
 
         private Color AddNoise(int amount, Color color)
         {
-            int R = color.R + RandomSingleton.GetRandom().Next(-amount, amount + 1);
-            int G = color.G + RandomSingleton.GetRandom().Next(-amount, amount + 1);
-            int B = color.B + RandomSingleton.GetRandom().Next(-amount, amount + 1);
+            int R = color.R + RandomGen.GetInstance().Next(-amount, amount + 1);
+            int G = color.G + RandomGen.GetInstance().Next(-amount, amount + 1);
+            int B = color.B + RandomGen.GetInstance().Next(-amount, amount + 1);
             R = R > 255 ? 255 : R;
             R = R < 0 ? 0 : R;
             G = G > 255 ? 255 : G;

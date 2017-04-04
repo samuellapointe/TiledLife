@@ -9,11 +9,6 @@ namespace TiledLife.World
 {
     class Tile : GameElement
     {
-        // These should be the same for every tile on the map
-        public const int TILE_HEIGHT = 100;
-        public const int TILE_WIDTH = 100;
-        public const int PIXELS_PER_METER = 8;
-
         // The blocks
         Block[,] blocks;
 
@@ -30,13 +25,18 @@ namespace TiledLife.World
             this.tileX = tileX;
             this.tileY = tileY;
 
-            bounds = new Rectangle(tileX, tileY, TILE_WIDTH, TILE_HEIGHT);
+            bounds = new Rectangle(tileX, tileY, Map.TILE_WIDTH, Map.TILE_HEIGHT);
 
+        }
+
+        public Block GetBlockAt(int col, int row)
+        {
+            return blocks[row, col];
         }
 
         public void Initialize()
         {
-            blocks = TileGenerator.GenerateTile(TILE_HEIGHT, TILE_WIDTH);
+            blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH);
 
             for (int i = 0; i < 100; i++)
             {
@@ -81,8 +81,8 @@ namespace TiledLife.World
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            int offsetX = TILE_WIDTH * tileX;
-            int offsetY = TILE_HEIGHT * tileY;
+            int offsetX = Map.TILE_WIDTH * tileX;
+            int offsetY = Map.TILE_HEIGHT * tileY;
             foreach (Block block in blocks)
             {
                 block.Draw(spriteBatch, offsetX, offsetY);
@@ -101,11 +101,11 @@ namespace TiledLife.World
             int padding = 2;
             for (int i = 0; i < maxNbOfTries; i++)
             {
-                int x = RandomSingleton.GetRandom().Next(0, TILE_WIDTH);
-                int y = RandomSingleton.GetRandom().Next(0, TILE_HEIGHT);
-                if (blocks[y,x].CanWalkOn())
+                int col = RandomGen.GetInstance().Next(0, Map.TILE_WIDTH);
+                int row = RandomGen.GetInstance().Next(0, Map.TILE_HEIGHT);
+                if (blocks[row,col].CanWalkOn())
                 {
-                    return new Vector2((x * PIXELS_PER_METER) + padding, (y * PIXELS_PER_METER) + padding);
+                    return new Vector2((col * Map.PIXELS_PER_METER) + padding, (row * Map.PIXELS_PER_METER) + padding);
                 }
             }
 
