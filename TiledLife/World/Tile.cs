@@ -105,7 +105,10 @@ namespace TiledLife.World
                 int row = RandomGen.GetInstance().Next(0, Map.TILE_HEIGHT);
                 if (blocks[row,col].CanWalkOn())
                 {
-                    return new Vector2((col * Map.PIXELS_PER_METER) + padding, (row * Map.PIXELS_PER_METER) + padding);
+                    return new Vector2(
+                        (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH), 
+                        (row * Map.PIXELS_PER_METER) + padding + (tileY * Map.TILE_WIDTH)
+                    );
                 }
             }
 

@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Creature\AI\ActionLookForMaterial.cs" />
     <Compile Include="Creature\AI\BaseNode.cs" />
     <Compile Include="Creature\AI\ActionRotate.cs" />
     <Compile Include="Creature\AI\ActionDecide.cs" />

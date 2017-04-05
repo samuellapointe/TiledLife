@@ -39,14 +39,20 @@ namespace TiledLife.World
             Vector2 blockPosition = position / PIXELS_PER_METER;
 
             // Find the tile containing that block
-            Vector2 tilePosition = new Vector2(blockPosition.X / TILE_WIDTH, blockPosition.Y / TILE_HEIGHT);
-            String stringTilePosition = (int)tilePosition.X + "," + (int)tilePosition.Y;
+            Vector2 tilePosition = new Vector2(
+                (float)Math.Floor(blockPosition.X) / TILE_WIDTH, 
+                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
+            );
+            String stringTilePosition = (int)Math.Floor(tilePosition.X) + "," + (int)Math.Floor(tilePosition.Y);
 
             // Find tile
             if (tiles.ContainsKey(stringTilePosition))
             {
                 Tile tile = tiles[stringTilePosition];
-                return tile.GetBlockAt((int)blockPosition.X, (int)blockPosition.Y);
+                int xWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
+                int yWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
+
+                return tile.GetBlockAt(xWithinTile, yWithinTile);
             }
 
             // Get the block coordinates
@@ -56,7 +62,7 @@ namespace TiledLife.World
 
         public void Initialize()
         {
-            tiles.Add("0,0", new Tile(0, 0));
+            tiles.Add("2,3", new Tile(2, 3));
             foreach (KeyValuePair<string, Tile> entry in tiles)
             {
                 entry.Value.Initialize();

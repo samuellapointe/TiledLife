@@ -20,12 +20,19 @@ namespace TiledLife.Creature.AI
 
         public override void Initialize()
         {
-            // Nothing yet
+            currentStatus = Status.Running;
         }
 
         public override Status Run(GameTime gameTime)
         {
-            if (!initialized) Initialize();
+            if (currentStatus == Status.New)
+            {
+                Initialize();
+            }
+            else if (currentStatus != Status.Running)
+            {
+                return currentStatus;
+            }
 
             if (currentNode != null)
             {
@@ -44,8 +51,9 @@ namespace TiledLife.Creature.AI
             } else
             {
                 // Choose random angle and rotate that amount
-                float randomAngle = (float)RandomGen.GetInstance().Next(-20, 21) / 10;
-                currentNode = new ActionRotate(human, randomAngle);
+                /*float randomAngle = (float)RandomGen.GetInstance().Next(-20, 21) / 10;
+                currentNode = new ActionRotate(human, randomAngle);*/
+                currentNode = new ActionLookForMaterial(human, "water");
             }
 
             return BaseNode.Status.Running;

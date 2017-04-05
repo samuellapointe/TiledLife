@@ -12,7 +12,7 @@ namespace TiledLife.World
 {
     class Block
     {
-        private Material material { get; }
+        public Material material { get; private set; }
 
         private int width = Map.PIXELS_PER_METER;
         private int height = Map.PIXELS_PER_METER;

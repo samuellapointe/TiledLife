@@ -33,9 +33,19 @@ namespace TiledLife.Creature
             behavior = new ActionDecide(this);
         }
 
+        public float GetPhysicalAttr(DNA.PhysicalAttribute attribute)
+        {
+            return dna.GetPhysicalAttr(attribute);
+        }
+
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.Draw(texture, position, null, null, new Vector2(16f, 16f), angle, scale);
+        }
+
+        public void GrowForDebug()
+        {
+            scale *= 4;
         }
 
         public override void Initialize()

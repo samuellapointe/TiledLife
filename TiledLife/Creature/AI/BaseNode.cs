@@ -8,13 +8,14 @@ namespace TiledLife.Creature.AI
 {
     abstract class BaseNode
     {
-        public enum Status { Success, Failure, Running, Error };
-        protected bool initialized;
+        public enum Status { New, Success, Failure, Running, Error };
+        protected Status currentStatus;
         List<BaseNode> children;
 
         public BaseNode()
         {
             children = new List<BaseNode>();
+            currentStatus = Status.New;
         }
 
         // Called the first time the node is visited by its parent

@@ -8,7 +8,10 @@ namespace TiledLife.Creature
     // Represents every unique attribute for a humna
     class DNA
     {
-        public enum PhysicalAttribute { ThirstIncreaseRate, MaxThirst };
+        public enum PhysicalAttribute {
+            ThirstIncreaseRate, MaxThirst,
+            ViewDistance
+        };
 
         Dictionary<PhysicalAttribute, float> physicalAttributes;
 
@@ -18,6 +21,7 @@ namespace TiledLife.Creature
 
             physicalAttributes.Add(PhysicalAttribute.ThirstIncreaseRate, ((float)RandomGen.GetInstance().Next(95, 100)/50));
             physicalAttributes.Add(PhysicalAttribute.MaxThirst, RandomGen.GetInstance().Next(98, 103));
+            physicalAttributes.Add(PhysicalAttribute.ViewDistance, RandomGen.GetInstance().Next(50, 75));
         }
 
         // Create DNA from two parents

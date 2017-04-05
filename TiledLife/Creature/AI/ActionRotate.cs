@@ -18,12 +18,19 @@ namespace TiledLife.Creature.AI
         public override void Initialize()
         {
             targetAngle = human.angle + angle;
-            initialized = true;
+            currentStatus = Status.Running;
         }
 
         public override Status Run(GameTime gameTime)
         {
-            if (!initialized) Initialize();
+            if (currentStatus == Status.New)
+            {
+                Initialize();
+            }
+            else if (currentStatus != Status.Running)
+            {
+                return currentStatus;
+            }
 
             float secondsPassed = (float)gameTime.ElapsedGameTime.TotalSeconds;
             float currentAngle = human.angle;
