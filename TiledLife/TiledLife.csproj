@@ -39,9 +39,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Creature\AI\ActionLookForMaterial.cs" />
+    <Compile Include="Creature\AI\ActionSatisfyNeeds.cs" />
     <Compile Include="Creature\AI\BaseNode.cs" />
     <Compile Include="Creature\AI\ActionRotate.cs" />
     <Compile Include="Creature\AI\ActionDecide.cs" />
+    <Compile Include="Creature\AI\Sequence.cs" />
     <Compile Include="Creature\DNA.cs" />
     <Compile Include="Creature\Human.cs" />
     <Compile Include="Game1.cs" />

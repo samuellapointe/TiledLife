@@ -36,7 +36,8 @@ namespace TiledLife.Creature.AI
 
             if (currentNode != null)
             {
-                switch(currentNode.Run(gameTime))
+                Status status = currentNode.Run(gameTime);
+                switch (status)
                 {
                     case BaseNode.Status.Success:
                         currentNode = null;
@@ -44,6 +45,8 @@ namespace TiledLife.Creature.AI
                     case BaseNode.Status.Failure:
                         break;
                     case BaseNode.Status.Error:
+                        Debug.Print("Node returned an error");
+                        if (Debugger.IsAttached) Debugger.Break();
                         break;
                     case BaseNode.Status.Running:
                         break;
@@ -51,9 +54,13 @@ namespace TiledLife.Creature.AI
             } else
             {
                 // Choose random angle and rotate that amount
-                /*float randomAngle = (float)RandomGen.GetInstance().Next(-20, 21) / 10;
-                currentNode = new ActionRotate(human, randomAngle);*/
-                currentNode = new ActionLookForMaterial(human, "water");
+                float randomAngle = (float)RandomGen.GetInstance().Next(-20, 21) / 10;
+                BaseNode node1 = new ActionRotate(human, randomAngle);
+                BaseNode node2 = new ActionLookForMaterial(human, "water");
+                Queue<BaseNode> queue = new Queue<BaseNode>();
+                queue.Enqueue(node2);
+                queue.Enqueue(node1);
+                currentNode = new Sequence(queue);
             }
 
             return BaseNode.Status.Running;

@@ -70,6 +70,7 @@ namespace TiledLife.Creature.AI
             if (currentStatus == Status.New)
             {
                 Initialize();
+                return currentStatus;
             }
             else if (currentStatus != Status.Running)
             {
@@ -98,7 +99,6 @@ namespace TiledLife.Creature.AI
                 }
                 return Status.Running;
             }
-            return Status.Error;
         }
     }
 }

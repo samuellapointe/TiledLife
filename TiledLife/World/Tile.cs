@@ -15,7 +15,6 @@ namespace TiledLife.World
         // Position
         int tileX;
         int tileY;
-        Rectangle bounds;
 
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
@@ -24,8 +23,6 @@ namespace TiledLife.World
         {
             this.tileX = tileX;
             this.tileY = tileY;
-
-            bounds = new Rectangle(tileX, tileY, Map.TILE_WIDTH, Map.TILE_HEIGHT);
 
         }
 
@@ -81,8 +78,8 @@ namespace TiledLife.World
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            int offsetX = Map.TILE_WIDTH * tileX;
-            int offsetY = Map.TILE_HEIGHT * tileY;
+            int offsetX = Map.TILE_WIDTH * Map.PIXELS_PER_METER * tileX;
+            int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
             foreach (Block block in blocks)
             {
                 block.Draw(spriteBatch, offsetX, offsetY);
@@ -106,8 +103,8 @@ namespace TiledLife.World
                 if (blocks[row,col].CanWalkOn())
                 {
                     return new Vector2(
-                        (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH), 
-                        (row * Map.PIXELS_PER_METER) + padding + (tileY * Map.TILE_WIDTH)
+                        (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH * Map.PIXELS_PER_METER), 
+                        (row * Map.PIXELS_PER_METER) + padding + (tileY * Map.TILE_HEIGHT * Map.PIXELS_PER_METER)
                     );
                 }
             }

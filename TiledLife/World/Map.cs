@@ -56,13 +56,13 @@ namespace TiledLife.World
             }
 
             // Get the block coordinates
-            Debug.Print("Map.cs: Tried to get a block somewhere empty");
+            //Debug.Print("Map.cs: Tried to get a block somewhere empty");
             return null;
         }
 
         public void Initialize()
         {
-            tiles.Add("2,3", new Tile(2, 3));
+            tiles.Add("0,0", new Tile(0, 0));
             foreach (KeyValuePair<string, Tile> entry in tiles)
             {
                 entry.Value.Initialize();

@@ -10,11 +10,9 @@ namespace TiledLife.Creature.AI
     {
         public enum Status { New, Success, Failure, Running, Error };
         protected Status currentStatus;
-        List<BaseNode> children;
 
         public BaseNode()
         {
-            children = new List<BaseNode>();
             currentStatus = Status.New;
         }
 

@@ -6,13 +6,14 @@ namespace TiledLife.Creature.AI
     {
         Human human;
         float angle;
-        float rotateSpeed = 1;
+        float rotateSpeed;
         float targetAngle;
 
         public ActionRotate(Human human, float angle)
         {
             this.human = human;
             this.angle = angle;
+            this.rotateSpeed = human.GetPhysicalAttr(DNA.PhysicalAttribute.RotateSpeed);
         }
 
         public override void Initialize()

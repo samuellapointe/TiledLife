@@ -10,7 +10,8 @@ namespace TiledLife.Creature
     {
         public enum PhysicalAttribute {
             ThirstIncreaseRate, MaxThirst,
-            ViewDistance
+            ViewDistance,
+            RotateSpeed
         };
 
         Dictionary<PhysicalAttribute, float> physicalAttributes;
@@ -19,9 +20,10 @@ namespace TiledLife.Creature
         {
             physicalAttributes = new Dictionary<PhysicalAttribute, float>();
 
-            physicalAttributes.Add(PhysicalAttribute.ThirstIncreaseRate, ((float)RandomGen.GetInstance().Next(95, 100)/50));
+            physicalAttributes.Add(PhysicalAttribute.ThirstIncreaseRate, ((float)RandomGen.GetInstance().Next(95, 100)/50f));
             physicalAttributes.Add(PhysicalAttribute.MaxThirst, RandomGen.GetInstance().Next(98, 103));
             physicalAttributes.Add(PhysicalAttribute.ViewDistance, RandomGen.GetInstance().Next(50, 75));
+            physicalAttributes.Add(PhysicalAttribute.RotateSpeed, RandomGen.GetInstance().Next(98, 103)/100f);
         }
 
         // Create DNA from two parents
