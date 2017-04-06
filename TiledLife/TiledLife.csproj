@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Creature\ActionSatisfyThirst.cs" />
+    <Compile Include="Creature\AI\ActionSatisfyThirst.cs" />
     <Compile Include="Creature\AI\ActionTemplate.cs" />
     <Compile Include="Creature\AI\ActionDrink.cs" />
     <Compile Include="Creature\AI\ActionLookForMaterial.cs" />

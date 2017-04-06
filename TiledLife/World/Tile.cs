@@ -112,5 +112,23 @@ namespace TiledLife.World
             // Couldn't find a valid spawn location
             return new Vector2(0, 0);
         }
+
+        public AbstractCreature GetCreatureAtPixelPosition(Vector2 position)
+        {
+            float minDistance = float.MaxValue;
+            AbstractCreature closestCreature = null;
+            foreach(AbstractCreature c in creatures)
+            {
+                float distance = Vector2.DistanceSquared(position, c.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestCreature = c;
+                }
+            }
+
+            return closestCreature;
+        }
     }
+
 }

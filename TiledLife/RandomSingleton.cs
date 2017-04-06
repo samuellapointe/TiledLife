@@ -17,5 +17,12 @@ namespace TiledLife
             }
             return random;
         }
+
+        public static float GetFloat(float min, float max)
+        {
+            float range = max - min;
+            float value = range * (float)GetInstance().NextDouble() + min;
+            return value;
+        }
     }
 }

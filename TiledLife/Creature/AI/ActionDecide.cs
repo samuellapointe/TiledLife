@@ -50,6 +50,7 @@ namespace TiledLife.Creature.AI
                         if (Debugger.IsAttached) Debugger.Break();
                         break;
                     case BaseNode.Status.Running:
+                    case BaseNode.Status.New:
                         break;
                 }
             } else

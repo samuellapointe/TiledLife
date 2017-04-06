@@ -12,7 +12,12 @@ namespace TiledLife.World
     {
         private static Map map;
 
+        // A map is made of tiles
         Dictionary<String, Tile> tiles = new Dictionary<string, Tile>();
+
+        // Debugging vars
+        private List<Vector2> debugDots = new List<Vector2>();
+        private Texture2D debugDotTexture;
 
         // These should be the same for every tile on the map
         public const int TILE_HEIGHT = 100;
@@ -35,29 +40,34 @@ namespace TiledLife.World
 
         public Block GetBlockAt(Vector2 position)
         {
-            // The position is a pixel. Turn into a block position;
-            Vector2 blockPosition = position / PIXELS_PER_METER;
-
-            // Find the tile containing that block
-            Vector2 tilePosition = new Vector2(
-                (float)Math.Floor(blockPosition.X) / TILE_WIDTH, 
-                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
-            );
-            String stringTilePosition = (int)Math.Floor(tilePosition.X) + "," + (int)Math.Floor(tilePosition.Y);
+            Tile tile = GetTileFromPixelPosition(position);
 
             // Find tile
-            if (tiles.ContainsKey(stringTilePosition))
+            if (tile != null)
             {
-                Tile tile = tiles[stringTilePosition];
-                int xWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
-                int yWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
+                Vector2 positionWithinTile = GetBlockPositionFromPixelPosition(position);
 
-                return tile.GetBlockAt(xWithinTile, yWithinTile);
+                return tile.GetBlockAt((int)positionWithinTile.X, (int)positionWithinTile.Y);
             }
 
             // Get the block coordinates
             //Debug.Print("Map.cs: Tried to get a block somewhere empty");
             return null;
+        }
+
+        public AbstractCreature GetCreatureAt(Vector2 position)
+        {
+            Tile tile = GetTileFromPixelPosition(position);
+            if (tile != null)
+            {
+                return tile.GetCreatureAtPixelPosition(position);
+            }
+            return null;
+        }
+
+        public void AddDebugDot(Vector2 position)
+        {
+            debugDots.Add(position);
         }
 
         public void Initialize()
@@ -75,6 +85,7 @@ namespace TiledLife.World
             {
                 entry.Value.LoadContent(content);
             }
+            debugDotTexture = content.Load<Texture2D>("DebugDot");
         }
 
         public void UnloadContent()
@@ -91,6 +102,10 @@ namespace TiledLife.World
             {
                 entry.Value.Draw(spriteBatch, gameTime);
             }
+            foreach (Vector2 position in debugDots)
+            {
+                spriteBatch.Draw(debugDotTexture, position, null, null, new Vector2(8f, 8f), 0, new Vector2(0.2f, 0.2f));
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -99,6 +114,43 @@ namespace TiledLife.World
             {
                 entry.Value.Update(gameTime);
             }
+        }
+
+        private Tile GetTileFromPixelPosition(Vector2 position)
+        {
+            // The position is a pixel. Turn into a block position;
+            Vector2 blockPosition = position / PIXELS_PER_METER;
+
+            // Find the tile containing that block
+            Vector2 tilePosition = new Vector2(
+                (float)Math.Floor(blockPosition.X) / TILE_WIDTH,
+                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
+            );
+            String stringTilePosition = (int)Math.Floor(tilePosition.X) + "," + (int)Math.Floor(tilePosition.Y);
+
+            // Find tile
+            if (tiles.ContainsKey(stringTilePosition))
+            {
+                return tiles[stringTilePosition];
+            }
+            return null;
+        }
+
+        private Vector2 GetBlockPositionFromPixelPosition(Vector2 position)
+        {
+            // The position is a pixel. Turn into a block position;
+            Vector2 blockPosition = position / PIXELS_PER_METER;
+
+            // Find the tile containing that block
+            Vector2 tilePosition = new Vector2(
+                (float)Math.Floor(blockPosition.X) / TILE_WIDTH,
+                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
+            );
+
+            int xWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
+            int yWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
+
+            return new Vector2(xWithinTile, yWithinTile);
         }
     }
 }

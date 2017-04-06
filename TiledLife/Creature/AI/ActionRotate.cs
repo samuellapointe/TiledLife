@@ -42,10 +42,10 @@ namespace TiledLife.Creature.AI
             float finalAngle = currentAngle + deltaAngle;
 
             // Rotate clockwise too far
-            if (angle >= 0 && finalAngle > targetAngle)
+            if (angle > 0 && finalAngle > targetAngle)
             {
                 finalAngle = targetAngle;
-            } else if (angle < 0 && finalAngle < targetAngle)
+            } else if (angle <= 0 && finalAngle < targetAngle)
             {
                 finalAngle = targetAngle;
             }

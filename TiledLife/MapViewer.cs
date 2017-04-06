@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using TiledLife.World;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using System.Diagnostics;
 
 namespace TiledLife
 {
@@ -16,9 +17,12 @@ namespace TiledLife
         
         // Inputs
         MouseState mouseState;
+        MouseState lastMouseState;
         Point oldMousePosition;
         int mouseScrollWheelValue;
         int oldMouseScrollWheelValue;
+
+        double lastClickTime = 0;
 
         // Controls
         float zoomLevel;
@@ -85,6 +89,25 @@ namespace TiledLife
                 offset = new Vector2(offset.X + deltaPosition.X, offset.Y + deltaPosition.Y);
             }
 
+            if (lastMouseState.LeftButton == ButtonState.Released && mouseState.LeftButton == ButtonState.Pressed)
+            {
+                lastClickTime = gameTime.TotalGameTime.TotalMilliseconds;
+            }
+            else if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+            {
+                double currentTime = gameTime.TotalGameTime.TotalMilliseconds;
+                double clickLength = currentTime - lastClickTime;
+
+                if (clickLength < 150)
+                {
+                    Creature.AbstractCreature creature = Map.GetInstance().GetCreatureAt(mousePosition.ToVector2());
+                    if (creature != null)
+                    {
+                        Debug.Print(creature.position.ToString());
+                    }
+                }
+            }
+
             // Delta scroll zoom
             mouseScrollWheelValue = mouseState.ScrollWheelValue;
             int deltaScrollWheelValue = oldMouseScrollWheelValue - mouseScrollWheelValue;
@@ -108,6 +131,7 @@ namespace TiledLife
 
         public void UpdateMouseState(MouseState mouseState)
         {
+            lastMouseState = this.mouseState;
             this.mouseState = mouseState; 
         }
     }

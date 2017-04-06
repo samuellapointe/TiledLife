@@ -21,14 +21,14 @@ namespace TiledLife.Creature
             physicalAttributes = new Dictionary<PhysicalAttribute, float>();
 
             // Thirst attributes
-            physicalAttributes.Add(PhysicalAttribute.ThirstIncreaseRate, ((float)RandomGen.GetInstance().Next(95, 100)/50f));
-            physicalAttributes.Add(PhysicalAttribute.MaxThirst, RandomGen.GetInstance().Next(98, 103));
-            physicalAttributes.Add(PhysicalAttribute.ThirstThreshold, (float)RandomGen.GetInstance().Next(5, 40) / 100);
+            physicalAttributes.Add(PhysicalAttribute.ThirstIncreaseRate, RandomGen.GetFloat(0.95f, 1f)); 
+            physicalAttributes.Add(PhysicalAttribute.MaxThirst, RandomGen.GetInstance().Next(98, 103)); 
+            physicalAttributes.Add(PhysicalAttribute.ThirstThreshold, RandomGen.GetFloat(0.01f, 0.03f)); //TODO set to something higher
 
             physicalAttributes.Add(PhysicalAttribute.ViewDistance, RandomGen.GetInstance().Next(50, 75));
 
-            physicalAttributes.Add(PhysicalAttribute.RotateSpeed, (float)RandomGen.GetInstance().Next(98, 103)/100f);
-            physicalAttributes.Add(PhysicalAttribute.WalkSpeed, 0.1f);
+            physicalAttributes.Add(PhysicalAttribute.RotateSpeed, RandomGen.GetFloat(0.98f, 1.03f));
+            physicalAttributes.Add(PhysicalAttribute.WalkSpeed, RandomGen.GetFloat(0.08f, 0.12f));
         }
 
         // Create DNA from two parents
