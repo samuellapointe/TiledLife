@@ -10,9 +10,6 @@ namespace TiledLife.Creature
 {
     abstract class AbstractCreature : GameElement
     {
-        // Needs
-        public float thirst { get; protected set; }
-
         // Position
         public Vector2 position { get; protected set; }
         public float angle { get; set; }

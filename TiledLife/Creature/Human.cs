@@ -21,13 +21,16 @@ namespace TiledLife.Creature
         // AI
         BaseNode behavior;
 
+        // Needs
+        public NeedsManager needsManager { get; private set; }
+
         public Human(Vector2 position)
         {
-            thirst = 0f;
             this.position = position;
             angle = ((float)(Math.PI / 2)) * RandomGen.GetInstance().Next(0, 4);
             scale = new Vector2(0.10f, 0.10f);
             dna = new DNA();
+            needsManager = new NeedsManager(this);
             alive = true;
 
             behavior = new ActionDecide(this);
@@ -41,11 +44,6 @@ namespace TiledLife.Creature
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.Draw(texture, position, null, null, new Vector2(16f, 16f), angle, scale);
-        }
-
-        public void GrowForDebug()
-        {
-            scale *= 4;
         }
 
         public override void Initialize()
@@ -72,39 +70,19 @@ namespace TiledLife.Creature
             }
 
             // Update physical needs
-            thirst += dna.GetPhysicalAttr(DNA.PhysicalAttribute.ThirstIncreaseRate) * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            // Check vital needs
-            if (thirst > dna.GetPhysicalAttr(DNA.PhysicalAttribute.MaxThirst))
-            {
-                Die();
-            }
-
-            // Decide what to do
-            /*if (thirst > dna.GetPhysicalAttr(DNA.PhysicalAttribute.MaxThirst) * 0.01)
-            {
-                findingWater = true;
-            }
-
-            // Do something
-            if (findingWater && !foundWater)
-            {
-                Vector2 checkPosition = position + new Vector2(0, -8);
-                Block testBlock = Map.GetInstance().GetBlockAt(checkPosition);
-                if (testBlock != null && !testBlock.CanWalkOn())
-                {
-                    foundWater = true;
-                    scale *= 4;
-                }
-                // Check in front
-                angle += 0.8f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }*/
+            needsManager.Update(gameTime);
 
             // Update behavior nodes
             behavior.Run(gameTime);
         }
 
-        private void Die()
+        public void Walk(Vector2 direction)
+        {
+            direction.Normalize();
+            position += GetPhysicalAttr(DNA.PhysicalAttribute.WalkSpeed) * direction;
+        }
+
+        public void Die()
         {
             alive = false;
         }

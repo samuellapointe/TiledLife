@@ -6,26 +6,16 @@ using Microsoft.Xna.Framework;
 
 namespace TiledLife.Creature.AI
 {
-    class ActionSatisfyNeeds : BaseNode
+    class ActionDrink : BaseNode
     {
         Human human;
-        BaseNode sequence;
-
-        public ActionSatisfyNeeds(Human human)
+        public ActionDrink (Human human)
         {
             this.human = human;
         }
-
         public override void Initialize()
         {
-            Queue<BaseNode> nodes = new Queue<BaseNode>();
-            if (human.needsManager.IsThirsty())
-            {
-                nodes.Enqueue(new ActionSatisfyThirst(human));
-            }
-
-            sequence = new Sequence(nodes);
-            currentStatus = Status.Running;
+            this.currentStatus = Status.Running;
         }
 
         public override Status Run(GameTime gameTime)
@@ -35,7 +25,15 @@ namespace TiledLife.Creature.AI
                 Initialize();
             }
 
-            return sequence.Run(gameTime);
+            if (!human.needsManager.IsThirstFull())
+            {
+                human.needsManager.Drink(gameTime);
+                return Status.Running;
+            }
+            else
+            {
+                return Status.Success;
+            }
         }
     }
 }

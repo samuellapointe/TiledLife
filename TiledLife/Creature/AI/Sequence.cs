@@ -17,10 +17,22 @@ namespace TiledLife.Creature.AI
             this.nodes = nodes;
         }
 
+        public void AddNode(BaseNode node)
+        {
+            nodes.Enqueue(node);
+        }
+
         public override void Initialize()
         {
-            currentRunningNode = nodes.Dequeue();
-            this.currentStatus = Status.Running;
+            if (nodes.Count > 0)
+            {
+                currentRunningNode = nodes.Dequeue();
+                this.currentStatus = Status.Running;
+            }
+            else // An empty sequence automatically suceeds
+            {
+                this.currentStatus = Status.Success;
+            }
         }
 
         public override Status Run(GameTime gameTime)
@@ -29,7 +41,7 @@ namespace TiledLife.Creature.AI
             {
                 Initialize();
             }
-            else if (currentStatus != Status.Running)
+            if (currentStatus != Status.Running)
             {
                 return currentStatus;
             }
