@@ -59,7 +59,6 @@ namespace TiledLife.Creature.AI
                         pointsToCheck.Enqueue(sidePoint);
                     }
                 }
-
             }
 
             currentStatus = Status.Running;
