@@ -43,9 +43,17 @@ namespace TiledLife.Creature
                 {
                     case Status.Success:
                         foundWater = true;
+
+                        // Calculate the final angle to rotate to
                         waterLocation = lookForWater.finalPosition;
+                        float targetAngle = (float)Math.Atan2(
+                            waterLocation.Y - human.position.Y, 
+                            waterLocation.X - human.position.X
+                        );
+                        float angle = targetAngle - human.angle;
 
                         Queue<BaseNode> queue = new Queue<BaseNode>();
+                        queue.Enqueue(new ActionRotate(human, angle));
                         queue.Enqueue(new ActionWalkTo(human, waterLocation));
                         queue.Enqueue(new ActionDrink(human));
                         sequence = new Sequence(queue);

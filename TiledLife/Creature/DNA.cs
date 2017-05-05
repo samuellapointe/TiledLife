@@ -27,7 +27,8 @@ namespace TiledLife.Creature
 
             physicalAttributes.Add(PhysicalAttribute.ViewDistance, RandomGen.GetInstance().Next(50, 75));
 
-            physicalAttributes.Add(PhysicalAttribute.RotateSpeed, RandomGen.GetFloat(0.98f, 1.03f));
+            // Speed attributes
+            physicalAttributes.Add(PhysicalAttribute.RotateSpeed, RandomGen.GetFloat(0.50f, 3.0f));
             physicalAttributes.Add(PhysicalAttribute.WalkSpeed, RandomGen.GetFloat(0.08f, 0.12f));
         }
 

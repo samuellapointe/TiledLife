@@ -56,7 +56,7 @@ namespace TiledLife.Creature.AI
             } else
             {
                 // Choose random angle and rotate that amount
-                float randomAngle = (float)RandomGen.GetInstance().Next(-20, 21) / 10;
+                float randomAngle = (float)RandomGen.GetInstance().Next(-200, 200) / 100;
                 BaseNode node1 = new ActionSatisfyNeeds(human);
                 BaseNode node2 = new ActionRotate(human, randomAngle);
                 Queue<BaseNode> queue = new Queue<BaseNode>();
