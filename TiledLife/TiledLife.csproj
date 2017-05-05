@@ -58,6 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Creature\AbstractCreature.cs" />
     <Compile Include="RandomSingleton.cs" />
+    <Compile Include="SimplexNoise.cs" />
     <Compile Include="World\Block.cs" />
     <Compile Include="World\Materials\Liquid\MaterialLiquid.cs" />
     <Compile Include="World\Materials\Material.cs" />

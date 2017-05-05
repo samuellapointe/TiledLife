@@ -10,7 +10,9 @@ namespace TiledLife.World
     class Tile : GameElement
     {
         // The blocks
-        Block[,] blocks;
+        // [0, 0, 0]: north-west corner, at the bottom of the earth
+        // [col, row, depth]
+        Block[,,] blocks;
 
         // Position
         int tileX;
@@ -26,19 +28,19 @@ namespace TiledLife.World
 
         }
 
-        public Block GetBlockAt(int col, int row)
+        public Block GetBlockAt(int col, int row, int depth)
         {
-            return blocks[row, col];
+            return blocks[col, row, depth];
         }
 
         public void Initialize()
         {
-            blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH);
+            blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH, Map.TILE_DEPTH);
 
             for (int i = 0; i < 100; i++)
             {
                 //creatures.Add(new Sheep(new Vector2(100 + i * 10, 500)));
-                creatures.Add(new Human(GetRandomValidPosition()));
+                //creatures.Add(new Human(GetRandomValidPosition()));
             }
         }
 
@@ -80,9 +82,16 @@ namespace TiledLife.World
         {
             int offsetX = Map.TILE_WIDTH * Map.PIXELS_PER_METER * tileX;
             int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
-            foreach (Block block in blocks)
+            for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
             {
-                block.Draw(spriteBatch, offsetX, offsetY);
+                for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
+                {
+                    Block block = GetTopmostBlockAtPosition(col, row);
+                    if (block != null) // A whole column could be empty
+                    {
+                        block.Draw(spriteBatch, offsetX, offsetY);
+                    }
+                }
             }
 
             foreach (AbstractCreature creature in creatures)
@@ -100,7 +109,7 @@ namespace TiledLife.World
             {
                 int col = RandomGen.GetInstance().Next(0, Map.TILE_WIDTH);
                 int row = RandomGen.GetInstance().Next(0, Map.TILE_HEIGHT);
-                if (blocks[row,col].CanWalkOn())
+                if (blocks[row,col,0].CanWalkOn())
                 {
                     return new Vector2(
                         (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH * Map.PIXELS_PER_METER), 
@@ -128,6 +137,18 @@ namespace TiledLife.World
             }
 
             return closestCreature;
+        }
+
+        public Block GetTopmostBlockAtPosition(int col, int row)
+        {
+            for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
+            {
+                if (!blocks[col, row, i].IsEmpty())
+                {
+                    return blocks[col, row, i];
+                }
+            }
+            return null;
         }
     }
 

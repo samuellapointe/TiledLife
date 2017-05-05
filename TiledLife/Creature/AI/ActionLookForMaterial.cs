@@ -83,7 +83,7 @@ namespace TiledLife.Creature.AI
                     {
                         Vector2 point = pointsToCheck.Dequeue();
                         //Map.GetInstance().AddDebugDot(point);
-                        Block block = Map.GetInstance().GetBlockAt(point);
+                        Block block = Map.GetInstance().GetBlockAtPixelPosition(point);
                         if (block != null && block.material.name.Equals(materialName))
                         {
                             finalPosition = point;

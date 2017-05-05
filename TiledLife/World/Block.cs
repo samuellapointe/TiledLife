@@ -10,6 +10,18 @@ using TiledLife.World.Materials;
 /* A block is a 1 meter x 1 meter tile */
 namespace TiledLife.World
 {
+    class BlockPosition
+    {
+        private int[] position;
+        public BlockPosition(int col, int row, int depth)
+        {
+            position = new int[] { col, row, depth };
+        }
+        public int Col() { return position[0]; }
+        public int Row() { return position[1]; }
+        public int Depth() { return position[2]; }
+    }
+
     class Block
     {
         public Material material { get; private set; }
@@ -19,14 +31,19 @@ namespace TiledLife.World
 
         private int blockX;
         private int blockY;
+        private int blockZ;
+
+        private Block[,,] blocks;
 
         private Texture2D texture;
 
-        public Block (Material material, int blockX, int blockY)
+        public Block (Material material, int blockX, int blockY, int blockZ, Block[,,] blocks)
         {
             this.material = material;
             this.blockX = blockX;
             this.blockY = blockY;
+            this.blockZ = blockZ;
+            this.blocks = blocks;
         }
 
         private void GenerateTexture(SpriteBatch spriteBatch)
@@ -59,11 +76,29 @@ namespace TiledLife.World
             return material.isSolid;
         }
 
+        public bool IsEmpty()
+        {
+            return material == null;
+        }
+
+        public bool IsVisible()
+        {
+            for (int i = blockZ; i < Map.TILE_DEPTH-1; i++)
+            {
+                if (!blocks[blockX, blockY, i].IsEmpty())
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private Color AddNoise(int amount, Color color)
         {
-            int R = color.R + RandomGen.GetInstance().Next(-amount, amount + 1);
-            int G = color.G + RandomGen.GetInstance().Next(-amount, amount + 1);
-            int B = color.B + RandomGen.GetInstance().Next(-amount, amount + 1);
+            int darkness = (Map.TILE_DEPTH - blockZ)*2;
+            int R = color.R + RandomGen.GetInstance().Next(-amount, amount + 1) - darkness;
+            int G = color.G + RandomGen.GetInstance().Next(-amount, amount + 1) - darkness;
+            int B = color.B + RandomGen.GetInstance().Next(-amount, amount + 1) - darkness;
             R = R > 255 ? 255 : R;
             R = R < 0 ? 0 : R;
             G = G > 255 ? 255 : G;

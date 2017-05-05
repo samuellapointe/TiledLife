@@ -22,6 +22,7 @@ namespace TiledLife.World
         // These should be the same for every tile on the map
         public const int TILE_HEIGHT = 100;
         public const int TILE_WIDTH = 100;
+        public const int TILE_DEPTH = 100;
         public const int PIXELS_PER_METER = 8;
 
         private Map()
@@ -38,16 +39,20 @@ namespace TiledLife.World
             return map;
         }
 
-        public Block GetBlockAt(Vector2 position)
+        public Block GetBlockAtPixelPosition(Vector2 pixelPosition)
         {
-            Tile tile = GetTileFromPixelPosition(position);
+            Tile tile = GetTileFromPixelPosition(pixelPosition);
 
             // Find tile
             if (tile != null)
             {
-                Vector2 positionWithinTile = GetBlockPositionFromPixelPosition(position);
+                BlockPosition positionWithinTile = GetBlockPositionFromPixelPosition(pixelPosition);
 
-                return tile.GetBlockAt((int)positionWithinTile.X, (int)positionWithinTile.Y);
+                return tile.GetBlockAt(
+                    positionWithinTile.Col(), 
+                    positionWithinTile.Row(), 
+                    positionWithinTile.Depth()
+                );
             }
 
             // Get the block coordinates
@@ -136,7 +141,7 @@ namespace TiledLife.World
             return null;
         }
 
-        private Vector2 GetBlockPositionFromPixelPosition(Vector2 position)
+        private BlockPosition GetBlockPositionFromPixelPosition(Vector2 position)
         {
             // The position is a pixel. Turn into a block position;
             Vector2 blockPosition = position / PIXELS_PER_METER;
@@ -147,10 +152,11 @@ namespace TiledLife.World
                 (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
             );
 
-            int xWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
-            int yWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
+            int colWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
+            int rowWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
+            int depthWithinTile = 0;
 
-            return new Vector2(xWithinTile, yWithinTile);
+            return new BlockPosition(colWithinTile, rowWithinTile, depthWithinTile);
         }
     }
 }
