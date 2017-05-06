@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using TiledLife.World.Materials.Liquid;
-using TiledLife.World.Materials.Solid;
 using TiledLife.World.Materials;
 
 namespace TiledLife.World
@@ -31,15 +28,19 @@ namespace TiledLife.World
 
                     for (int k = 0; k < tileWidth; k++)
                     {
-                        Material material = null;
+                        List<Material> materials = new List<Material>();
+             
                         if (k < blockDepth)
                         {
-                            material = MaterialSolid.CreateMaterial(MaterialSolid.MaterialSolidNames.Dirt);
+                            materials.Add(new Dirt(1f));
+                        } else
+                        {
+                            materials.Add(new Air(1f));
                         }
+
                         blocks[i, j, k] = new Block(
-                            material,
-                            i, j, k,
-                            blocks
+                            new BlockPosition(i, j, k),
+                            materials
                         );
                     }
                 }

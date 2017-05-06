@@ -21,11 +21,12 @@ namespace TiledLife.World
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
 
+        Texture2D depthMap;
+
         public Tile(int tileX, int tileY)
         {
             this.tileX = tileX;
             this.tileY = tileY;
-
         }
 
         public Block GetBlockAt(int col, int row, int depth)
@@ -82,17 +83,50 @@ namespace TiledLife.World
         {
             int offsetX = Map.TILE_WIDTH * Map.PIXELS_PER_METER * tileX;
             int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
+
+            Color[] colorData = null;
+            if (depthMap == null)
+            {
+                depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
+                int nbPixels = Map.TILE_HEIGHT * Map.TILE_WIDTH;
+                colorData = new Color[nbPixels];
+            }
+
             for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
             {
                 for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
                 {
+                    int depth = 0;
                     Block block = GetTopmostBlockAtPosition(col, row);
                     if (block != null) // A whole column could be empty
                     {
                         block.Draw(spriteBatch, offsetX, offsetY);
+                        depth = block.position.Depth();
+                    }
+
+                    if (colorData != null)
+                    {
+                        float darkness = 1 - ((float)depth / Map.TILE_DEPTH);
+                        colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
                     }
                 }
             }
+
+            if (colorData != null)
+            {
+                depthMap.SetData<Color>(colorData);
+            }
+
+            // Draw depth map
+            spriteBatch.Draw(
+                depthMap, 
+                new Rectangle(
+                    0, 0, 
+                    Map.TILE_WIDTH*Map.PIXELS_PER_METER, 
+                    Map.TILE_HEIGHT*Map.PIXELS_PER_METER
+                    ),
+                Color.White
+            );
 
             foreach (AbstractCreature creature in creatures)
             {
@@ -104,18 +138,18 @@ namespace TiledLife.World
         public Vector2 GetRandomValidPosition()
         {
             int maxNbOfTries = 10;
-            int padding = 2;
+            //int padding = 2;
             for (int i = 0; i < maxNbOfTries; i++)
             {
                 int col = RandomGen.GetInstance().Next(0, Map.TILE_WIDTH);
                 int row = RandomGen.GetInstance().Next(0, Map.TILE_HEIGHT);
-                if (blocks[row,col,0].CanWalkOn())
+                /*if (blocks[row,col,0].CanWalkOn())
                 {
                     return new Vector2(
                         (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH * Map.PIXELS_PER_METER), 
                         (row * Map.PIXELS_PER_METER) + padding + (tileY * Map.TILE_HEIGHT * Map.PIXELS_PER_METER)
                     );
-                }
+                }*/
             }
 
             // Couldn't find a valid spawn location
@@ -143,7 +177,7 @@ namespace TiledLife.World
         {
             for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
             {
-                if (!blocks[col, row, i].IsEmpty())
+                if (!(blocks[col, row, i].GetMostCommonMaterial() is Materials.Air))
                 {
                     return blocks[col, row, i];
                 }

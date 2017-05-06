@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using TiledLife.World.Materials;
 using TiledLife.World;
 
 namespace TiledLife.Creature.AI
@@ -84,12 +83,12 @@ namespace TiledLife.Creature.AI
                         Vector2 point = pointsToCheck.Dequeue();
                         //Map.GetInstance().AddDebugDot(point);
                         Block block = Map.GetInstance().GetBlockAtPixelPosition(point);
-                        if (block != null && block.material.name.Equals(materialName))
+                        /*if (block != null && block.material.name.Equals(materialName))
                         {
                             finalPosition = point;
                             currentStatus = Status.Success;
                             return currentStatus;
-                        }
+                        }*/
                     }
                     else
                     {
