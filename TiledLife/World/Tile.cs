@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using TiledLife.Creature;
+using TiledLife.World.Materials;
 
 namespace TiledLife.World
 {
@@ -13,6 +14,7 @@ namespace TiledLife.World
         // [0, 0, 0]: north-west corner, at the bottom of the earth
         // [col, row, depth]
         Block[,,] blocks;
+        Queue<Block> blockUpdateQueue;
 
         // Position
         int tileX;
@@ -27,6 +29,8 @@ namespace TiledLife.World
         {
             this.tileX = tileX;
             this.tileY = tileY;
+
+            blockUpdateQueue = new Queue<Block>();
         }
 
         public Block GetBlockAt(int col, int row, int depth)
@@ -36,7 +40,7 @@ namespace TiledLife.World
 
         public void Initialize()
         {
-            blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH, Map.TILE_DEPTH);
+            blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH, Map.TILE_DEPTH, this);
 
             for (int i = 0; i < 100; i++)
             {
@@ -61,6 +65,14 @@ namespace TiledLife.World
             }
         }
 
+        public void AddBlockToUpdateQueue(Block block)
+        {
+            if (!blockUpdateQueue.Contains(block))
+            {
+                blockUpdateQueue.Enqueue(block);
+            }
+        }
+
         public void Update(GameTime gameTime)
         {
             foreach (AbstractCreature creature in creatures)
@@ -77,6 +89,12 @@ namespace TiledLife.World
                     creatures.RemoveAt(i);
                 }
             }
+
+            for (int i = 0; i < 500 && blockUpdateQueue.Count > 0; i++)
+            {
+                Block block = blockUpdateQueue.Dequeue();
+                block.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -85,12 +103,9 @@ namespace TiledLife.World
             int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
 
             Color[] colorData = null;
-            if (depthMap == null)
-            {
-                depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
-                int nbPixels = Map.TILE_HEIGHT * Map.TILE_WIDTH;
-                colorData = new Color[nbPixels];
-            }
+            depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
+            int nbPixels = Map.TILE_HEIGHT * Map.TILE_WIDTH;
+            colorData = new Color[nbPixels];
 
             for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
             {
@@ -104,18 +119,12 @@ namespace TiledLife.World
                         depth = block.position.Depth();
                     }
 
-                    if (colorData != null)
-                    {
-                        float darkness = 1 - ((float)depth / Map.TILE_DEPTH);
-                        colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
-                    }
+                    float darkness = 1 - ((float)depth / Map.TILE_DEPTH);
+                    colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
                 }
             }
 
-            if (colorData != null)
-            {
-                depthMap.SetData<Color>(colorData);
-            }
+            depthMap.SetData<Color>(colorData);
 
             // Draw depth map
             spriteBatch.Draw(
@@ -177,7 +186,7 @@ namespace TiledLife.World
         {
             for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
             {
-                if (!(blocks[col, row, i].GetMostCommonMaterial() is Materials.Air))
+                if (blocks[col, row, i].GetMostCommonVisibleMaterial().phase != Material.Phase.Gas)
                 {
                     return blocks[col, row, i];
                 }

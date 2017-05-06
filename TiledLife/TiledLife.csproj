@@ -60,8 +60,6 @@
     <Compile Include="RandomSingleton.cs" />
     <Compile Include="SimplexNoise.cs" />
     <Compile Include="World\Block.cs" />
-    <Compile Include="World\Materials\Air.cs" />
-    <Compile Include="World\Materials\Dirt.cs" />
     <Compile Include="World\Materials\Material.cs" />
     <Compile Include="World\Tile.cs" />
     <Compile Include="World\Map.cs" />

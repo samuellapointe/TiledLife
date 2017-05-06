@@ -8,7 +8,7 @@ namespace TiledLife.World
 {
     static class TileGenerator
     {
-        public static Block[,,] GenerateTile(int tileHeight, int tileWidth, int tileDepth)
+        public static Block[,,] GenerateTile(int tileHeight, int tileWidth, int tileDepth, Tile tile)
         {
             Block[,,] blocks = new Block[tileHeight, tileWidth, tileDepth];
             float[,] depth1 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.001f);
@@ -28,19 +28,26 @@ namespace TiledLife.World
 
                     for (int k = 0; k < tileWidth; k++)
                     {
-                        List<Material> materials = new List<Material>();
+                        Dictionary<Material.Name, byte> contents = new Dictionary<Material.Name, byte>();
              
                         if (k < blockDepth)
                         {
-                            materials.Add(new Dirt(1f));
-                        } else
+                            contents.Add(Material.Name.Dirt, Material.FULL);
+                        }
+                        else
                         {
-                            materials.Add(new Air(1f));
+                            if (i == 50 || RandomGen.GetInstance().Next(0, 800000) == 0)
+                            {
+                                contents.Add(Material.Name.Water, Material.FULL);
+                            } else
+                            {
+                                contents.Add(Material.Name.Air, Material.FULL);
+                            }
                         }
 
                         blocks[i, j, k] = new Block(
                             new BlockPosition(i, j, k),
-                            materials
+                            contents, tile
                         );
                     }
                 }

@@ -2,28 +2,75 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace TiledLife.World.Materials
 {
-    abstract class Material
+    class Material
     {
-        public static int NB_UNIQUE_TEXTURES = 10;
+        // Enums and static constants
+        public enum Name {Air, Dirt, Water };
+        public enum Phase { Solid, Liquid, Gas };
 
-        // Abstract values
-        public abstract string GetName();
-        public abstract string GetDescription();
-        public abstract Color GetColor();
-        public abstract float GetSpeedModifier();
-        public abstract Texture2D GetRandomTexture(SpriteBatch spriteBatch);
+        public static int NB_UNIQUE_TEXTURES = 20;
+        public static byte FULL = 255;
 
-        // Non-abstract
-        public float volume;
+        // Properties
+        public Name name { get; private set; }
+        public Color color { get; private set; }
+        public Phase phase { get; private set; }
+        private Texture2D[] textures;
 
-        public Material(float volume)
+        // All the materials
+        private static Dictionary<Name, Material> materials;
+
+        public Material(Name name, Color color, Phase phase)
         {
-            this.volume = volume;
+            this.name = name;
+            this.color = color;
+            this.phase = phase;
+        }
+
+        public static Material GetMaterial(Name name)
+        {
+            if (materials == null)
+            {
+                materials = new Dictionary<Name, Material>();
+            }
+
+            if (materials.ContainsKey(name))
+            {
+                return materials[name];
+            }
+            else
+            {
+                Material newMaterial = CreateMaterial(name);
+                materials.Add(name, newMaterial);
+                return newMaterial;
+            }
+        }
+
+        private static Material CreateMaterial(Name name)
+        {
+            switch (name)
+            {
+                case Name.Air:      return new Material(name, Color.SkyBlue,        Phase.Gas);
+                case Name.Dirt:     return new Material(name, Color.SaddleBrown,    Phase.Solid);
+                case Name.Water:    return new Material(name, Color.CadetBlue,      Phase.Liquid);
+                default: return null;
+            }
+        }
+
+        public Texture2D GetRandomTexture(SpriteBatch spriteBatch)
+        {
+            int index = RandomGen.GetInstance().Next(Material.NB_UNIQUE_TEXTURES);
+            if (textures == null)
+            {
+                textures = GenerateTextures(spriteBatch, Map.PIXELS_PER_METER, Map.PIXELS_PER_METER, 10);
+            }
+            return textures[index];
         }
 
         protected Texture2D[] GenerateTextures(SpriteBatch spriteBatch, int width, int height, int noise)
@@ -38,7 +85,7 @@ namespace TiledLife.World.Materials
 
                 for (int j = 0; j < nbPixels; j++)
                 {
-                    colorData[j] = AddNoise(noise, GetColor());
+                    colorData[j] = AddNoise(noise, color);
                 }
                 textures[i].SetData<Color>(colorData);
             }
