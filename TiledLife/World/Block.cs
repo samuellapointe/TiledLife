@@ -160,6 +160,13 @@ namespace TiledLife.World
             }
         }
 
+        public void SwapVolume(Block other)
+        {
+            Dictionary<Material.Name, byte> tmpContent = new Dictionary<Material.Name, byte>(other.contents); // Clone
+            other.contents = new Dictionary<Material.Name, byte>(this.contents); // Clone
+            this.contents = tmpContent;
+        }
+
         // GameElement functions
         public void Draw(SpriteBatch spriteBatch, int offsetX, int offsetY)
         {
@@ -176,65 +183,118 @@ namespace TiledLife.World
         {
             // Handle liquid physics
             byte waterVolume = GetVolume(Material.Name.Water);
+            byte viscosity = 2;
 
-            int viscosity = 8;
-            if (waterVolume > 0 && position.Depth() > 0)
+            if (waterVolume > 0)
             {
                 Block bottomNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() - 1);
-
                 byte volumeAirBelow = bottomNeighbor.GetVolume(Material.Name.Air);
 
-                // Air below, let water fall
+                // Tile below is empty, swap
+                if (volumeAirBelow == Material.FULL)
+                {
+                    SwapVolume(bottomNeighbor);
+                    tile.AddBlockToUpdateQueue(bottomNeighbor);
+                    return;
+                }
+
+                // Tile below has air, transfer some water down
                 if (volumeAirBelow > 0)
                 {
-                    byte volumeToTransfer = Math.Min(volumeAirBelow, waterVolume);
-                    RemoveVolume(Material.Name.Water, volumeToTransfer);
-                    bottomNeighbor.AddVolume(Material.Name.Water, volumeToTransfer);
-                    if (volumeToTransfer < waterVolume)
+                    // More or same amount of space below
+                    if (volumeAirBelow >= waterVolume)
                     {
+                        RemoveVolume(Material.Name.Water, waterVolume);
+                        bottomNeighbor.AddVolume(Material.Name.Water, waterVolume);
+                        tile.AddBlockToUpdateQueue(bottomNeighbor);
+                        return;
+                    }
+                    else
+                    {
+                        RemoveVolume(Material.Name.Water, volumeAirBelow);
+                        bottomNeighbor.AddVolume(Material.Name.Water, volumeAirBelow);
+                        tile.AddBlockToUpdateQueue(bottomNeighbor);
                         tile.AddBlockToUpdateQueue(this);
+                        // We don't return here, there's still water to spread
                     }
-                    tile.AddBlockToUpdateQueue(bottomNeighbor);
                 }
-                else
-                // No air below, spread water around
+
+                // Evaporate
+                if (waterVolume == 1)
                 {
-                    List<Block> neighbors = GetNeighbors();
-                    List<Block> validNeighbors = new List<Block>();
-                    foreach (Block neighbor in neighbors)
-                    {
-                        if (neighbor.GetVolume(Material.Name.Air) > 0)
-                        {
-                            validNeighbors.Add(neighbor);
-                        }
-                    }
-
-                    if (validNeighbors.Count > 0 && waterVolume > viscosity)
-                    {
-                        int index = RandomGen.GetInstance().Next(0, validNeighbors.Count);
-                        Block spreadNeighbor = validNeighbors[index];
-
-                        int neighborWaterVolume = spreadNeighbor.GetVolume(Material.Name.Water);
-
-                        if (Math.Abs(neighborWaterVolume - waterVolume) > viscosity)
-                        {
-                            int totalWater = waterVolume + spreadNeighbor.GetVolume(Material.Name.Water);
-                            //if (totalWater == 1) totalWater = 0;
-                            bool uneven = totalWater % 2 == 1;
-
-                            byte spreadVolume = (byte)(totalWater / 2);
-
-                            GoToVolume(Material.Name.Water, spreadVolume);
-
-                            if (uneven) spreadVolume++;
-                            spreadNeighbor.GoToVolume(Material.Name.Water, spreadVolume);
-
-                            tile.AddBlockToUpdateQueue(this);
-                            tile.AddBlockToUpdateQueue(spreadNeighbor);
-                        }
-                    }
-                   
+                    RemoveVolume(Material.Name.Water, 1);
                 }
+
+                if (waterVolume < viscosity)
+                {
+                    return;
+                }
+
+                // Now spread to sides
+                List<Block> neighbors = GetNeighbors();
+                List<Block> spreadBlocks = new List<Block>();
+                byte volumeAirHere = GetVolume(Material.Name.Air);
+                int totalAir = volumeAirHere;
+
+                // Find neighbors with more free space than here
+                foreach (Block neighbor in neighbors)
+                {
+                    byte volumeAirNeighbor = neighbor.GetVolume(Material.Name.Air);
+                    if (volumeAirNeighbor > volumeAirHere)
+                    {
+                        spreadBlocks.Add(neighbor);
+                        totalAir += volumeAirNeighbor;
+                    }
+                }
+
+                // No free space
+                if (spreadBlocks.Count == 0)
+                {
+                    return;
+                }
+
+                // Average the air between the cells
+                spreadBlocks.Add(this);
+                int rest = totalAir % spreadBlocks.Count;
+                byte average = (byte)(totalAir / spreadBlocks.Count);
+
+                foreach (Block block in spreadBlocks)
+                {
+                    byte volumeAirBlock = block.GetVolume(Material.Name.Air);
+                    if (volumeAirBlock > average)
+                    {
+                        byte difference = (byte)(volumeAirBlock - average);
+                        if (difference > viscosity)
+                        {
+                            if (rest > 0)
+                            {
+                                rest--;
+                                difference -= 1;
+                            }
+
+                            block.RemoveVolume(Material.Name.Air, difference);
+                            block.AddVolume(Material.Name.Water, difference);
+                            tile.AddBlockToUpdateQueue(block);
+                        }
+                    }
+                    else if (volumeAirBlock < average)
+                    {
+                        byte difference = (byte)(average - volumeAirBlock);
+                        if (difference > viscosity)
+                        {
+                            if (rest > 0)
+                            {
+                                rest--;
+                                difference += 1;
+                            }
+
+                            block.RemoveVolume(Material.Name.Water, difference);
+                            block.AddVolume(Material.Name.Air, difference);
+                            tile.AddBlockToUpdateQueue(block);
+                        }
+                    }
+                }
+
             }
         }
 

@@ -15,6 +15,7 @@ namespace TiledLife.World
         // [col, row, depth]
         Block[,,] blocks;
         Queue<Block> blockUpdateQueue;
+        Queue<Block> nextBlockUpdateQueue;
 
         // Position
         int tileX;
@@ -31,6 +32,7 @@ namespace TiledLife.World
             this.tileY = tileY;
 
             blockUpdateQueue = new Queue<Block>();
+            nextBlockUpdateQueue = new Queue<Block>();
         }
 
         public Block GetBlockAt(int col, int row, int depth)
@@ -67,9 +69,9 @@ namespace TiledLife.World
 
         public void AddBlockToUpdateQueue(Block block)
         {
-            if (!blockUpdateQueue.Contains(block))
+            if (!nextBlockUpdateQueue.Contains(block))
             {
-                blockUpdateQueue.Enqueue(block);
+                nextBlockUpdateQueue.Enqueue(block);
             }
         }
 
@@ -90,7 +92,13 @@ namespace TiledLife.World
                 }
             }
 
-            for (int i = 0; i < 500 && blockUpdateQueue.Count > 0; i++)
+            if (blockUpdateQueue.Count == 0)
+            {
+                blockUpdateQueue = new Queue<Block>(nextBlockUpdateQueue);
+                nextBlockUpdateQueue.Clear();
+            }
+
+            for (int i = 0; i < 64000 && blockUpdateQueue.Count > 0; i++)
             {
                 Block block = blockUpdateQueue.Dequeue();
                 block.Update(gameTime);
