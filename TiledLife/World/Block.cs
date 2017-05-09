@@ -183,39 +183,49 @@ namespace TiledLife.World
         {
             // Handle liquid physics
             byte waterVolume = GetVolume(Material.Name.Water);
-            byte viscosity = 2;
+            byte viscosity = 0;
 
             if (waterVolume > 0)
             {
-                Block bottomNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() - 1);
-                byte volumeAirBelow = bottomNeighbor.GetVolume(Material.Name.Air);
-
-                // Tile below is empty, swap
-                if (volumeAirBelow == Material.FULL)
+                if (position.Depth() > 0)
                 {
-                    SwapVolume(bottomNeighbor);
-                    tile.AddBlockToUpdateQueue(bottomNeighbor);
-                    return;
-                }
+                    Block bottomNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() - 1);
+                    byte volumeAirBelow = bottomNeighbor.GetVolume(Material.Name.Air);
 
-                // Tile below has air, transfer some water down
-                if (volumeAirBelow > 0)
-                {
-                    // More or same amount of space below
-                    if (volumeAirBelow >= waterVolume)
+                    // Tile below is empty, swap
+                    if (volumeAirBelow == Material.FULL)
                     {
-                        RemoveVolume(Material.Name.Water, waterVolume);
-                        bottomNeighbor.AddVolume(Material.Name.Water, waterVolume);
+                        SwapVolume(bottomNeighbor);
                         tile.AddBlockToUpdateQueue(bottomNeighbor);
                         return;
                     }
-                    else
+
+                    // Tile below has air, transfer some water down
+                    if (volumeAirBelow > 0)
                     {
-                        RemoveVolume(Material.Name.Water, volumeAirBelow);
-                        bottomNeighbor.AddVolume(Material.Name.Water, volumeAirBelow);
-                        tile.AddBlockToUpdateQueue(bottomNeighbor);
-                        tile.AddBlockToUpdateQueue(this);
-                        // We don't return here, there's still water to spread
+                        // More or same amount of space below
+                        if (volumeAirBelow >= waterVolume)
+                        {
+                            RemoveVolume(Material.Name.Water, waterVolume);
+                            bottomNeighbor.AddVolume(Material.Name.Water, waterVolume);
+                            tile.AddBlockToUpdateQueue(bottomNeighbor);
+                            return;
+                        }
+                        else
+                        {
+                            RemoveVolume(Material.Name.Water, volumeAirBelow);
+                            bottomNeighbor.AddVolume(Material.Name.Water, volumeAirBelow);
+                            tile.AddBlockToUpdateQueue(bottomNeighbor);
+                            tile.AddBlockToUpdateQueue(this);
+                            // We don't return here, there's still water to spread
+                        }
+                    }
+
+                    // Update above too
+                    if (position.Depth() < Map.TILE_DEPTH - 1)
+                    {
+                        Block topNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() + 1);
+                        tile.AddBlockToUpdateQueue(topNeighbor);
                     }
                 }
 

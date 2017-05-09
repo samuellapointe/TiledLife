@@ -38,7 +38,8 @@ namespace TiledLife.World
                         {
                             contents.Add(Material.Name.Dirt, Material.FULL);
                         }
-                        else if (k < WATER_LEVEL)
+                        else if (i == 50 || j == 50)
+                        //else if (k < WATER_LEVEL)
                         {
                             contents.Add(Material.Name.Water, Material.FULL);
                         }

@@ -57,8 +57,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Creature\AbstractCreature.cs" />
-    <Compile Include="RandomSingleton.cs" />
-    <Compile Include="SimplexNoise.cs" />
+    <Compile Include="Tools\RandomSingleton.cs" />
+    <Compile Include="Tools\SimplexNoise.cs" />
+    <Compile Include="Tools\UniqueQueue.cs" />
     <Compile Include="World\Block.cs" />
     <Compile Include="World\Materials\Material.cs" />
     <Compile Include="World\Tile.cs" />

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using TiledLife.Creature;
+using TiledLife.Tools;
 using TiledLife.World.Materials;
 
 namespace TiledLife.World
@@ -15,8 +15,8 @@ namespace TiledLife.World
         // [col, row, depth]
         Block[,,] blocks;
         int[,] topmostBlocks;
-        Queue<Block> blockUpdateQueue;
-        Queue<Block> nextBlockUpdateQueue;
+        UniqueQueue<Block> blockUpdateQueue;
+        UniqueQueue<Block> nextBlockUpdateQueue;
 
         // Position
         int tileX;
@@ -35,8 +35,8 @@ namespace TiledLife.World
             this.tileX = tileX;
             this.tileY = tileY;
 
-            blockUpdateQueue = new Queue<Block>();
-            nextBlockUpdateQueue = new Queue<Block>();
+            blockUpdateQueue = new UniqueQueue<Block>();
+            nextBlockUpdateQueue = new UniqueQueue<Block>();
         }
 
         public Block GetBlockAt(int col, int row, int depth)
@@ -79,10 +79,7 @@ namespace TiledLife.World
 
         public void AddBlockToUpdateQueue(Block block)
         {
-            if (!nextBlockUpdateQueue.Contains(block))
-            {
-                nextBlockUpdateQueue.Enqueue(block);
-            }
+            nextBlockUpdateQueue.Enqueue(block);
         }
 
         public void Update(GameTime gameTime)
@@ -104,7 +101,7 @@ namespace TiledLife.World
 
             if (blockUpdateQueue.Count == 0)
             {
-                blockUpdateQueue = new Queue<Block>(nextBlockUpdateQueue);
+                blockUpdateQueue = new UniqueQueue<Block>(nextBlockUpdateQueue);
                 nextBlockUpdateQueue.Clear();
             }
 
