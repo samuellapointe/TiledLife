@@ -12,13 +12,15 @@ namespace TiledLife.World
 
         public static Block[,,] GenerateTile(int tileHeight, int tileWidth, int tileDepth, Tile tile)
         {
-            Simplex.Noise.Seed = RandomGen.GetInstance().Next();
 
             Block[,,] blocks = new Block[tileHeight, tileWidth, tileDepth];
             float[,] depth1 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.001f);
             float[,] depth2 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.01f);
             float[,] depth3 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.05f);
             float[,] depth4 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.1f);
+
+            int offsetX = tile.tileX * Map.TILE_WIDTH;
+            int offsetY = tile.tileY * Map.TILE_HEIGHT;
 
             for (int i = 0; i < tileDepth; i++)
             {
@@ -38,7 +40,7 @@ namespace TiledLife.World
                         {
                             contents.Add(Material.Name.Dirt, Material.FULL);
                         }
-                        else if (i == 50 || j == 50)
+                        else if (i == 0 && j == 0)
                         //else if (k < WATER_LEVEL)
                         {
                             contents.Add(Material.Name.Water, Material.FULL);
@@ -49,6 +51,7 @@ namespace TiledLife.World
                         }
 
                         blocks[i, j, k] = new Block(
+                            new BlockPosition(i + offsetX, j + offsetY, k),
                             new BlockPosition(i, j, k),
                             contents, tile
                         );

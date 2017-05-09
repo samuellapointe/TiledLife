@@ -14,6 +14,7 @@ namespace TiledLife
             if (random == null)
             {
                 random = new Random(1);
+                Simplex.Noise.Seed = random.Next();
             }
             return random;
         }

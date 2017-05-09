@@ -19,8 +19,8 @@ namespace TiledLife.World
         UniqueQueue<Block> nextBlockUpdateQueue;
 
         // Position
-        int tileX;
-        int tileY;
+        public int tileX { get; private set; }
+        public int tileY { get; private set; }
 
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
@@ -37,6 +37,11 @@ namespace TiledLife.World
 
             blockUpdateQueue = new UniqueQueue<Block>();
             nextBlockUpdateQueue = new UniqueQueue<Block>();
+        }
+
+        public Block GetBlockAt(BlockPosition blockPosition)
+        {
+            return blocks[blockPosition.Col(), blockPosition.Row(), blockPosition.Depth()];
         }
 
         public Block GetBlockAt(int col, int row, int depth)
@@ -109,7 +114,7 @@ namespace TiledLife.World
             {
                 Block block = blockUpdateQueue.Dequeue();
                 block.Update(gameTime);
-                UpdateTopmostBlock(block.position.Col(), block.position.Row());
+                UpdateTopmostBlock(block.localPosition.Col(), block.localPosition.Row());
             }
         }
 
@@ -123,9 +128,9 @@ namespace TiledLife.World
                 depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
             }
 
-            for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
+            for (int row = 0; row < Map.TILE_HEIGHT; row++)
             {
-                for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
+                for (int col = 0; col < Map.TILE_WIDTH; col++)
                 {
                     int depth = topmostBlocks[col, row];
                     Block block = blocks[col, row, depth];
@@ -144,7 +149,7 @@ namespace TiledLife.World
             spriteBatch.Draw(
                 depthMap, 
                 new Rectangle(
-                    0, 0, 
+                    offsetX, offsetY, 
                     Map.TILE_WIDTH*Map.PIXELS_PER_METER, 
                     Map.TILE_HEIGHT*Map.PIXELS_PER_METER
                     ),
@@ -179,13 +184,13 @@ namespace TiledLife.World
             return new Vector2(0, 0);
         }
 
-        public AbstractCreature GetCreatureAtPixelPosition(Vector2 position)
+        public AbstractCreature GetCreatureAtPixelPosition(float x, float y)
         {
             float minDistance = float.MaxValue;
             AbstractCreature closestCreature = null;
             foreach(AbstractCreature c in creatures)
             {
-                float distance = Vector2.DistanceSquared(position, c.position);
+                float distance = Vector2.DistanceSquared(new Vector2(x, y), c.position);
                 if (distance < minDistance)
                 {
                     minDistance = distance;
@@ -216,13 +221,34 @@ namespace TiledLife.World
 
         public void UpdateAllTopmostBlocks()
         {
-            for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
+            for (int row = 0; row < Map.TILE_HEIGHT; row++)
             {
-                for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
+                for (int col = 0; col < Map.TILE_WIDTH; col++)
                 {
                     UpdateTopmostBlock(col, row);
                 }
             }
+        }
+
+        public bool IsBlockPositionInTile(BlockPosition blockPosition)
+        {
+            return IsBlockPositionInTile(blockPosition.Col(), blockPosition.Row(), blockPosition.Depth());
+        }
+
+        public bool IsBlockPositionInTile(int col, int row, int depth)
+        {
+            int leftBound = tileX * Map.TILE_WIDTH;
+            int rightBound = (tileX + 1) * Map.TILE_WIDTH;
+            int topBound = tileY * Map.TILE_HEIGHT;
+            int bottomBound = (tileY + 1) * Map.TILE_HEIGHT;
+            return (
+                col >= leftBound &&
+                col < rightBound &&
+                row >= topBound &&
+                row < bottomBound &&
+                depth >= 0 &&
+                depth < Map.TILE_DEPTH
+            );
         }
     }
 

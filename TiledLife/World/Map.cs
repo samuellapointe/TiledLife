@@ -39,14 +39,14 @@ namespace TiledLife.World
             return map;
         }
 
-        public Block GetBlockAtPixelPosition(Vector2 pixelPosition)
+        public Block GetBlockAtPixelPosition(float x, float y)
         {
-            Tile tile = GetTileFromPixelPosition(pixelPosition);
+            Tile tile = GetTileFromPixelPosition(x, y);
 
             // Find tile
             if (tile != null)
             {
-                BlockPosition positionWithinTile = GetBlockPositionFromPixelPosition(pixelPosition);
+                BlockPosition positionWithinTile = GetBlockPositionFromPixelPosition(x, y, 0);
 
                 return tile.GetBlockAt(
                     positionWithinTile.Col(), 
@@ -60,12 +60,34 @@ namespace TiledLife.World
             return null;
         }
 
-        public AbstractCreature GetCreatureAt(Vector2 position)
+        public Block GetBlockAt(BlockPosition blockPosition)
         {
-            Tile tile = GetTileFromPixelPosition(position);
+            return GetBlockAt(blockPosition.Col(), blockPosition.Row(), blockPosition.Depth());
+        }
+
+        public Block GetBlockAt(int col, int row, int depth)
+        {
+            Tile tile = GetTileFromBlockPosition(col, row);
+
             if (tile != null)
             {
-                return tile.GetCreatureAtPixelPosition(position);
+                BlockPosition positionWithinTile = GetBlockPositionWithinTile(col, row, depth);
+
+                return tile.GetBlockAt(
+                    positionWithinTile.Col(),
+                    positionWithinTile.Row(),
+                    positionWithinTile.Depth()
+                );
+            }
+            return null;
+        }
+
+        public AbstractCreature GetCreatureAt(float x, float y)
+        {
+            Tile tile = GetTileFromPixelPosition(x, y);
+            if (tile != null)
+            {
+                return tile.GetCreatureAtPixelPosition(x, y);
             }
             return null;
         }
@@ -78,6 +100,9 @@ namespace TiledLife.World
         public void Initialize()
         {
             tiles.Add("0,0", new Tile(0, 0));
+            tiles.Add("0,1", new Tile(0, 1));
+            tiles.Add("1,0", new Tile(1, 0));
+            tiles.Add("1,1", new Tile(1, 1));
             foreach (KeyValuePair<string, Tile> entry in tiles)
             {
                 entry.Value.Initialize();
@@ -121,17 +146,23 @@ namespace TiledLife.World
             }
         }
 
-        private Tile GetTileFromPixelPosition(Vector2 position)
+        private Tile GetTileFromPixelPosition(float x, float y)
         {
             // The position is a pixel. Turn into a block position;
-            Vector2 blockPosition = position / PIXELS_PER_METER;
+            int blockCol = (int)Math.Floor(x / PIXELS_PER_METER);
+            int blockRow = (int)Math.Floor(y / PIXELS_PER_METER);
 
             // Find the tile containing that block
-            Vector2 tilePosition = new Vector2(
-                (float)Math.Floor(blockPosition.X) / TILE_WIDTH,
-                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
-            );
-            String stringTilePosition = (int)Math.Floor(tilePosition.X) + "," + (int)Math.Floor(tilePosition.Y);
+            return GetTileFromBlockPosition(blockCol, blockRow);
+        }
+
+        private Tile GetTileFromBlockPosition(int blockCol, int blockRow)
+        {
+            // Find the tile containing that block
+            int tileCol = (int)Math.Floor((float)blockCol / TILE_WIDTH);
+            int tileRow = (int)Math.Floor((float)blockRow / TILE_HEIGHT);
+
+            String stringTilePosition = tileCol + "," + tileRow;
 
             // Find tile
             if (tiles.ContainsKey(stringTilePosition))
@@ -141,20 +172,24 @@ namespace TiledLife.World
             return null;
         }
 
-        private BlockPosition GetBlockPositionFromPixelPosition(Vector2 position)
+        private BlockPosition GetBlockPositionFromPixelPosition(float col, float row, float depth)
         {
             // The position is a pixel. Turn into a block position;
-            Vector2 blockPosition = position / PIXELS_PER_METER;
+            int blockCol = (int)Math.Floor(col / PIXELS_PER_METER);
+            int blockRow = (int)Math.Floor(row / PIXELS_PER_METER);
+            int blockDepth = (int)Math.Floor(depth / PIXELS_PER_METER);
 
-            // Find the tile containing that block
-            Vector2 tilePosition = new Vector2(
-                (float)Math.Floor(blockPosition.X) / TILE_WIDTH,
-                (float)Math.Floor(blockPosition.Y) / TILE_HEIGHT
-            );
+            return GetBlockPositionWithinTile(blockCol, blockRow, blockDepth);
+        }
 
-            int colWithinTile = (int)Math.Floor(blockPosition.X) - ((int)tilePosition.X * TILE_WIDTH);
-            int rowWithinTile = (int)Math.Floor(blockPosition.Y) - ((int)tilePosition.Y * TILE_HEIGHT);
-            int depthWithinTile = 0;
+        private BlockPosition GetBlockPositionWithinTile(int col, int row, int depth)
+        {
+            int tileCol = (int)Math.Floor((float)col / TILE_WIDTH);
+            int tileRow = (int)Math.Floor((float)row / TILE_HEIGHT);
+
+            int colWithinTile = col - (tileCol * TILE_WIDTH);
+            int rowWithinTile = row - (tileRow * TILE_HEIGHT);
+            int depthWithinTile = depth;
 
             return new BlockPosition(colWithinTile, rowWithinTile, depthWithinTile);
         }

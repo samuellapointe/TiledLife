@@ -29,7 +29,8 @@ namespace TiledLife.World
         private int width = Map.PIXELS_PER_METER;
         private int height = Map.PIXELS_PER_METER;
 
-        public BlockPosition position { get; private set; }
+        public BlockPosition worldPosition { get; private set; }
+        public BlockPosition localPosition { get; private set; }
         private Texture2D texture;
 
         /* What a block contains, e.g. air or dirt
@@ -41,17 +42,19 @@ namespace TiledLife.World
 
         private Tile tile;
 
-        public Block (BlockPosition position, Tile tile)
+        public Block (BlockPosition worldPosition, BlockPosition localPosition, Tile tile)
         {
-            this.position = position;
+            this.worldPosition = worldPosition;
+            this.localPosition = localPosition;
             contents = new Dictionary<Material.Name, byte>();
             contents.Add(Material.Name.Air, 255);
             this.tile = tile;
         }
 
-        public Block (BlockPosition position, Dictionary<Material.Name, byte> contents, Tile tile)
+        public Block (BlockPosition worldPosition, BlockPosition localPosition, Dictionary<Material.Name, byte> contents, Tile tile)
         {
-            this.position = position;
+            this.worldPosition = worldPosition;
+            this.localPosition = localPosition;
             this.contents = contents;
             this.tile = tile;
 
@@ -90,21 +93,20 @@ namespace TiledLife.World
         {
             List<Block> neighbors = new List<Block>();
 
-            if (position.Col() < Map.TILE_WIDTH - 1)
+            BlockPosition[] positions = new BlockPosition[] {
+                new BlockPosition(worldPosition.Col()+1, worldPosition.Row(), worldPosition.Depth()),
+                new BlockPosition(worldPosition.Col()-1, worldPosition.Row(), worldPosition.Depth()),
+                new BlockPosition(worldPosition.Col(), worldPosition.Row()+1, worldPosition.Depth()),
+                new BlockPosition(worldPosition.Col(), worldPosition.Row()-1, worldPosition.Depth())
+            };
+
+            foreach (BlockPosition blockPosition in positions)
             {
-                neighbors.Add(tile.GetBlockAt(position.Col() + 1, position.Row(), position.Depth()));
-            }
-            if (position.Col() > 0)
-            {
-                neighbors.Add(tile.GetBlockAt(position.Col() - 1, position.Row(), position.Depth()));
-            }
-            if (position.Row() < Map.TILE_HEIGHT - 1)
-            {
-                neighbors.Add(tile.GetBlockAt(position.Col(), position.Row() + 1, position.Depth()));
-            }
-            if (position.Row() > 0)
-            {
-                neighbors.Add(tile.GetBlockAt(position.Col(), position.Row() - 1, position.Depth()));
+                Block block = Map.GetInstance().GetBlockAt(blockPosition);
+                if (block != null)
+                {
+                    neighbors.Add(block);
+                }
             }
 
             return neighbors;
@@ -170,7 +172,7 @@ namespace TiledLife.World
         // GameElement functions
         public void Draw(SpriteBatch spriteBatch, int offsetX, int offsetY)
         {
-            Vector2 offset = new Vector2(offsetX + position.Col() * width, offsetY + position.Row() * height);
+            Vector2 offset = new Vector2(offsetX + localPosition.Col() * width, offsetY + localPosition.Row() * height);
             if (texture == null)
             {
                 UpdateTexture(spriteBatch);
@@ -187,9 +189,9 @@ namespace TiledLife.World
 
             if (waterVolume > 0)
             {
-                if (position.Depth() > 0)
+                if (worldPosition.Depth() > 0)
                 {
-                    Block bottomNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() - 1);
+                    Block bottomNeighbor = tile.GetBlockAt(localPosition.Col(), localPosition.Row(), localPosition.Depth() - 1);
                     byte volumeAirBelow = bottomNeighbor.GetVolume(Material.Name.Air);
 
                     // Tile below is empty, swap
@@ -222,9 +224,9 @@ namespace TiledLife.World
                     }
 
                     // Update above too
-                    if (position.Depth() < Map.TILE_DEPTH - 1)
+                    if (worldPosition.Depth() < Map.TILE_DEPTH - 1)
                     {
-                        Block topNeighbor = tile.GetBlockAt(position.Col(), position.Row(), position.Depth() + 1);
+                        Block topNeighbor = tile.GetBlockAt(localPosition.Col(), localPosition.Row(), localPosition.Depth() + 1);
                         tile.AddBlockToUpdateQueue(topNeighbor);
                     }
                 }
@@ -307,8 +309,6 @@ namespace TiledLife.World
 
             }
         }
-
-
 
     }
 }

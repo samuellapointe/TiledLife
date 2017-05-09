@@ -100,7 +100,7 @@ namespace TiledLife
 
                 if (clickLength < 150)
                 {
-                    Creature.AbstractCreature creature = Map.GetInstance().GetCreatureAt(mousePosition.ToVector2());
+                    Creature.AbstractCreature creature = Map.GetInstance().GetCreatureAt(mousePosition.X, mousePosition.Y);
                     if (creature != null)
                     {
                         Debug.Print(creature.position.ToString());
