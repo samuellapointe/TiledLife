@@ -8,8 +8,12 @@ namespace TiledLife.World
 {
     static class TileGenerator
     {
+        public const int WATER_LEVEL = 64;
+
         public static Block[,,] GenerateTile(int tileHeight, int tileWidth, int tileDepth, Tile tile)
         {
+            Simplex.Noise.Seed = RandomGen.GetInstance().Next();
+
             Block[,,] blocks = new Block[tileHeight, tileWidth, tileDepth];
             float[,] depth1 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.001f);
             float[,] depth2 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.01f);
@@ -24,7 +28,7 @@ namespace TiledLife.World
                     int blockDepth2 = (int)Math.Round((depth2[i, j] / 1024) * Map.TILE_DEPTH);
                     int blockDepth3 = (int)Math.Round((depth3[i, j] / 2048) * Map.TILE_DEPTH);
                     int blockDepth4 = (int)Math.Round((depth4[i, j] / 4096) * Map.TILE_DEPTH);
-                    int blockDepth = (blockDepth1 + blockDepth2 + blockDepth3 + blockDepth4) + 30;
+                    int blockDepth = (blockDepth1 + blockDepth2 + blockDepth3 + blockDepth4) + 20;
 
                     for (int k = 0; k < tileWidth; k++)
                     {
@@ -34,15 +38,13 @@ namespace TiledLife.World
                         {
                             contents.Add(Material.Name.Dirt, Material.FULL);
                         }
+                        else if (k < WATER_LEVEL)
+                        {
+                            contents.Add(Material.Name.Water, Material.FULL);
+                        }
                         else
                         {
-                            if (i == 50 || RandomGen.GetInstance().Next(0, 800000) == 0)
-                            {
-                                contents.Add(Material.Name.Water, Material.FULL);
-                            } else
-                            {
-                                contents.Add(Material.Name.Air, Material.FULL);
-                            }
+                            contents.Add(Material.Name.Air, Material.FULL);
                         }
 
                         blocks[i, j, k] = new Block(

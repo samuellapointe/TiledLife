@@ -14,6 +14,7 @@ namespace TiledLife.World
         // [0, 0, 0]: north-west corner, at the bottom of the earth
         // [col, row, depth]
         Block[,,] blocks;
+        int[,] topmostBlocks;
         Queue<Block> blockUpdateQueue;
         Queue<Block> nextBlockUpdateQueue;
 
@@ -24,7 +25,10 @@ namespace TiledLife.World
         // Creatures contained in this tile
         List<AbstractCreature> creatures = new List<AbstractCreature>();
 
+        // Depth map
         Texture2D depthMap;
+        Color[] colorData;
+        bool depthMapNeedsUpdate = false;
 
         public Tile(int tileX, int tileY)
         {
@@ -43,6 +47,12 @@ namespace TiledLife.World
         public void Initialize()
         {
             blocks = TileGenerator.GenerateTile(Map.TILE_HEIGHT, Map.TILE_WIDTH, Map.TILE_DEPTH, this);
+
+            // Depth map
+            colorData = new Color[Map.TILE_HEIGHT * Map.TILE_WIDTH];
+
+            topmostBlocks = new int[Map.TILE_HEIGHT, Map.TILE_WIDTH];
+            UpdateAllTopmostBlocks();
 
             for (int i = 0; i < 100; i++)
             {
@@ -102,6 +112,7 @@ namespace TiledLife.World
             {
                 Block block = blockUpdateQueue.Dequeue();
                 block.Update(gameTime);
+                UpdateTopmostBlock(block.position.Col(), block.position.Row());
             }
         }
 
@@ -110,29 +121,27 @@ namespace TiledLife.World
             int offsetX = Map.TILE_WIDTH * Map.PIXELS_PER_METER * tileX;
             int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
 
-            Color[] colorData = null;
-            depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
-            int nbPixels = Map.TILE_HEIGHT * Map.TILE_WIDTH;
-            colorData = new Color[nbPixels];
+            if (depthMap == null)
+            {
+                depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
+            }
 
             for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
             {
                 for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
                 {
-                    int depth = 0;
-                    Block block = GetTopmostBlockAtPosition(col, row);
-                    if (block != null) // A whole column could be empty
-                    {
-                        block.Draw(spriteBatch, offsetX, offsetY);
-                        depth = block.position.Depth();
-                    }
-
-                    float darkness = 1 - ((float)depth / Map.TILE_DEPTH);
-                    colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
+                    int depth = topmostBlocks[col, row];
+                    Block block = blocks[col, row, depth];
+                    
+                    block.Draw(spriteBatch, offsetX, offsetY);
                 }
             }
 
-            depthMap.SetData<Color>(colorData);
+            if (depthMapNeedsUpdate)
+            {
+                depthMap.SetData<Color>(colorData);
+                depthMapNeedsUpdate = false;
+            }
 
             // Draw depth map
             spriteBatch.Draw(
@@ -190,16 +199,33 @@ namespace TiledLife.World
             return closestCreature;
         }
 
-        public Block GetTopmostBlockAtPosition(int col, int row)
+        public void UpdateTopmostBlock(int col, int row)
         {
             for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
             {
                 if (blocks[col, row, i].GetMostCommonVisibleMaterial().phase != Material.Phase.Gas)
                 {
-                    return blocks[col, row, i];
+                    topmostBlocks[col, row] = i;
+
+                    // Update depth map
+                    float darkness = 1 - ((float)i / Map.TILE_DEPTH);
+                    colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
+                    depthMapNeedsUpdate = true;
+
+                    return;
                 }
             }
-            return null;
+        }
+
+        public void UpdateAllTopmostBlocks()
+        {
+            for (int row = 0; row < Map.TILE_HEIGHT - 1; row++)
+            {
+                for (int col = 0; col < Map.TILE_WIDTH - 1; col++)
+                {
+                    UpdateTopmostBlock(col, row);
+                }
+            }
         }
     }
 
