@@ -66,23 +66,23 @@ namespace TiledLife.World
         {
             return GetBlockAt(blockPosition.Col(), blockPosition.Row(), blockPosition.Depth());
         }
-
+        */
         public Block GetBlockAt(int col, int row, int depth)
         {
             Tile tile = GetTileFromBlockPosition(col, row);
 
             if (tile != null)
             {
-                BlockPosition positionWithinTile = GetBlockPositionWithinTile(col, row, depth);
+                byte[] positionWithinTile = GetBlockPositionWithinTile(col, row, depth);
 
                 return tile.GetBlockAt(
-                    positionWithinTile.Col(),
-                    positionWithinTile.Row(),
-                    positionWithinTile.Depth()
+                    positionWithinTile[0],
+                    positionWithinTile[1],
+                    positionWithinTile[2]
                 );
             }
             return null;
-        }*/
+        }
 
         public AbstractCreature GetCreatureAt(float x, float y)
         {
@@ -148,7 +148,7 @@ namespace TiledLife.World
             }
         }
 
-        private Tile GetTileFromPixelPosition(float x, float y)
+        public Tile GetTileFromPixelPosition(float x, float y)
         {
             // The position is a pixel. Turn into a block position;
             int blockCol = (int)Math.Floor(x / BLOCK_WIDTH);
@@ -158,7 +158,7 @@ namespace TiledLife.World
             return GetTileFromBlockPosition(blockCol, blockRow);
         }
 
-        private Tile GetTileFromBlockPosition(int blockCol, int blockRow)
+        public Tile GetTileFromBlockPosition(int blockCol, int blockRow)
         {
             // Find the tile containing that block
             int tileCol = (int)Math.Floor((float)blockCol / TILE_WIDTH);
@@ -182,18 +182,18 @@ namespace TiledLife.World
             int blockDepth = (int)Math.Floor(depth / PIXELS_PER_METER);
 
             return GetBlockPositionWithinTile(blockCol, blockRow, blockDepth);
-        }
+        }*/
 
-        private BlockPosition GetBlockPositionWithinTile(int col, int row, int depth)
+        private byte[] GetBlockPositionWithinTile(int col, int row, int depth)
         {
             int tileCol = (int)Math.Floor((float)col / TILE_WIDTH);
             int tileRow = (int)Math.Floor((float)row / TILE_HEIGHT);
 
-            int colWithinTile = col - (tileCol * TILE_WIDTH);
-            int rowWithinTile = row - (tileRow * TILE_HEIGHT);
-            int depthWithinTile = depth;
+            byte colWithinTile = (byte)(col - (tileCol * TILE_WIDTH));
+            byte rowWithinTile = (byte)(row - (tileRow * TILE_HEIGHT));
+            byte depthWithinTile = (byte)depth;
 
-            return new BlockPosition(colWithinTile, rowWithinTile, depthWithinTile);
-        }*/
+            return new byte[] {colWithinTile, rowWithinTile, depthWithinTile};
+        }
     }
 }

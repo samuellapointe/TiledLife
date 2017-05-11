@@ -13,5 +13,6 @@ namespace TiledLife.World
     abstract class Block
     {
         public abstract void Draw(SpriteBatch spriteBatch, Vector2 offset);
+        public abstract void Update(GameTime gameTime);
     }
 }

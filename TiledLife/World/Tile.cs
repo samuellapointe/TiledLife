@@ -15,8 +15,8 @@ namespace TiledLife.World
         // [col, row, depth]
         Block[,,] blocks;
 
-        //UniqueQueue<Block> blockUpdateQueue;
-        //UniqueQueue<Block> nextBlockUpdateQueue;
+        UniqueQueue<byte[]> blockUpdateQueue;
+        UniqueQueue<byte[]> nextBlockUpdateQueue;
 
         // Position
         public int tileX { get; private set; }
@@ -35,19 +35,14 @@ namespace TiledLife.World
             this.tileX = tileX;
             this.tileY = tileY;
 
-            //blockUpdateQueue = new UniqueQueue<Block>();
-            //nextBlockUpdateQueue = new UniqueQueue<Block>();
+            blockUpdateQueue = new UniqueQueue<byte[]>();
+            nextBlockUpdateQueue = new UniqueQueue<byte[]>();
         }
 
-        /*public Block GetBlockAt(BlockPosition blockPosition)
-        {
-            return blocks[blockPosition.Col(), blockPosition.Row(), blockPosition.Depth()];
-        }
-
-        public Block GetBlockAt(int col, int row, int depth)
+        public Block GetBlockAt(byte col, byte row, byte depth)
         {
             return blocks[col, row, depth];
-        }*/
+        }
 
         public void Initialize()
         {
@@ -82,10 +77,10 @@ namespace TiledLife.World
             }
         }
 
-        /*public void AddBlockToUpdateQueue(Block block)
+        public void AddBlockToUpdateQueue(byte col, byte row, byte depth)
         {
-            nextBlockUpdateQueue.Enqueue(block);
-        }*/
+            nextBlockUpdateQueue.Enqueue(new byte[] { col, row, depth });
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -104,18 +99,17 @@ namespace TiledLife.World
                 }
             }
 
-            /*if (blockUpdateQueue.Count == 0)
+            if (blockUpdateQueue.Count == 0)
             {
-                blockUpdateQueue = new UniqueQueue<Block>(nextBlockUpdateQueue);
+                blockUpdateQueue = new UniqueQueue<byte[]>(nextBlockUpdateQueue);
                 nextBlockUpdateQueue.Clear();
             }
 
             for (int i = 0; i < 64000 && blockUpdateQueue.Count > 0; i++)
             {
-                Block block = blockUpdateQueue.Dequeue();
-                block.Update(gameTime);
-                UpdateTopmostBlock(block.localCol, block.localRow);
-            }*/
+                byte[] blockPosition = blockUpdateQueue.Dequeue();
+                blocks[blockPosition[0],blockPosition[1],blockPosition[2]].Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -185,8 +179,8 @@ namespace TiledLife.World
         {
             for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
             {
-                BlockSolid blockSolid = (blocks[col, row, i] as BlockSolid);
-                if (blockSolid != null)
+                Block block = blocks[col, row, i];
+                if (!(block is BlockEmpty))
                 {
                     depthMap[col, row] = i;
 
@@ -206,6 +200,12 @@ namespace TiledLife.World
                     UpdateTopmostBlock(col, row);
                 }
             }
+        }
+
+        public void SetBlock(byte col, byte row, byte depth, Block block)
+        {
+            blocks[col, row, depth] = block;
+            UpdateTopmostBlock(col, row);
         }
 
         /*public bool IsBlockPositionInTile(BlockPosition blockPosition)

@@ -62,6 +62,8 @@
     <Compile Include="Tools\TextureTools.cs" />
     <Compile Include="Tools\UniqueQueue.cs" />
     <Compile Include="World\Block.cs" />
+    <Compile Include="World\BlockLiquid.cs" />
+    <Compile Include="World\BlockEmpty.cs" />
     <Compile Include="World\BlockSolid.cs" />
     <Compile Include="World\Materials\Material.cs" />
     <Compile Include="World\Materials\MaterialManager.cs" />

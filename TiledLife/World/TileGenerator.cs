@@ -11,12 +11,14 @@ namespace TiledLife.World
         public const int WATER_LEVEL = 64;
 
         private static Material materialDirt;
+        private static Material materialWater;
 
         private static bool initialized = false;
 
         private static void InitializeMaterials()
         {
             materialDirt = MaterialManager.GetInstance().GetMaterial();
+            materialWater = MaterialManager.GetInstance().GetMaterial();
             initialized = true;
         }
 
@@ -26,6 +28,9 @@ namespace TiledLife.World
             {
                 InitializeMaterials();
             }
+
+            int tileX = tile.tileX;
+            int tileY = tile.tileY;
 
             Block[,,] blocks = new Block[tileHeight, tileWidth, tileDepth];
             float[,] depth1 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.001f);
@@ -46,27 +51,25 @@ namespace TiledLife.World
                     int blockDepth4 = (int)Math.Round((depth4[i, j] / 4096) * Map.TILE_DEPTH);
                     int blockDepth = (blockDepth1 + blockDepth2 + blockDepth3 + blockDepth4) + 20;
 
-                    for (int k = 0; k < tileWidth; k++)
+                    for (byte k = 0; k < tileWidth; k++)
                     {
                         if (k < blockDepth)
                         {
                             blocks[i, j, k] = new BlockSolid(materialDirt);
                         }
-                        /*else if (i == 0 && j == 0)
+                        else if (i == 50 && j > 97)
                         //else if (k < WATER_LEVEL)
                         {
-                            material = Material.GetMaterial(Material.Name.Water);
+                            int worldCol = tile.tileX * Map.TILE_WIDTH + i;
+                            int worldRow = tile.tileY * Map.TILE_HEIGHT + j;
+
+                            BlockLiquid newBlock = new BlockLiquid(materialWater, worldCol, worldRow, k);
+                            blocks[i, j, k] = newBlock;
                         }
                         else
                         {
-                            material = Material.GetMaterial(Material.Name.None);
-                        }*/
-
-                        /*blocks[i, j, k] = new Block(
-                            new BlockPosition(i + offsetX, j + offsetY, k),
-                            i, j,
-                            material, tile
-                        );*/
+                            blocks[i, j, k] = new BlockEmpty();
+                        }
                     }
                 }
             }
