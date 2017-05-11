@@ -59,9 +59,12 @@
     <Compile Include="Creature\AbstractCreature.cs" />
     <Compile Include="Tools\RandomSingleton.cs" />
     <Compile Include="Tools\SimplexNoise.cs" />
+    <Compile Include="Tools\TextureTools.cs" />
     <Compile Include="Tools\UniqueQueue.cs" />
     <Compile Include="World\Block.cs" />
+    <Compile Include="World\BlockSolid.cs" />
     <Compile Include="World\Materials\Material.cs" />
+    <Compile Include="World\Materials\MaterialManager.cs" />
     <Compile Include="World\Tile.cs" />
     <Compile Include="World\Map.cs" />
     <Compile Include="World\TileGenerator.cs" />

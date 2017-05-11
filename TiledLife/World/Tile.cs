@@ -14,9 +14,9 @@ namespace TiledLife.World
         // [0, 0, 0]: north-west corner, at the bottom of the earth
         // [col, row, depth]
         Block[,,] blocks;
-        int[,] topmostBlocks;
-        UniqueQueue<Block> blockUpdateQueue;
-        UniqueQueue<Block> nextBlockUpdateQueue;
+
+        //UniqueQueue<Block> blockUpdateQueue;
+        //UniqueQueue<Block> nextBlockUpdateQueue;
 
         // Position
         public int tileX { get; private set; }
@@ -26,20 +26,20 @@ namespace TiledLife.World
         List<AbstractCreature> creatures = new List<AbstractCreature>();
 
         // Depth map
-        Texture2D depthMap;
+        int[,] depthMap;
+        Texture2D depthMapTexture;
         Color[] colorData;
-        bool depthMapNeedsUpdate = false;
 
         public Tile(int tileX, int tileY)
         {
             this.tileX = tileX;
             this.tileY = tileY;
 
-            blockUpdateQueue = new UniqueQueue<Block>();
-            nextBlockUpdateQueue = new UniqueQueue<Block>();
+            //blockUpdateQueue = new UniqueQueue<Block>();
+            //nextBlockUpdateQueue = new UniqueQueue<Block>();
         }
 
-        public Block GetBlockAt(BlockPosition blockPosition)
+        /*public Block GetBlockAt(BlockPosition blockPosition)
         {
             return blocks[blockPosition.Col(), blockPosition.Row(), blockPosition.Depth()];
         }
@@ -47,7 +47,7 @@ namespace TiledLife.World
         public Block GetBlockAt(int col, int row, int depth)
         {
             return blocks[col, row, depth];
-        }
+        }*/
 
         public void Initialize()
         {
@@ -56,7 +56,7 @@ namespace TiledLife.World
             // Depth map
             colorData = new Color[Map.TILE_HEIGHT * Map.TILE_WIDTH];
 
-            topmostBlocks = new int[Map.TILE_HEIGHT, Map.TILE_WIDTH];
+            depthMap = new int[Map.TILE_HEIGHT, Map.TILE_WIDTH];
             UpdateAllTopmostBlocks();
 
             for (int i = 0; i < 100; i++)
@@ -82,10 +82,10 @@ namespace TiledLife.World
             }
         }
 
-        public void AddBlockToUpdateQueue(Block block)
+        /*public void AddBlockToUpdateQueue(Block block)
         {
             nextBlockUpdateQueue.Enqueue(block);
-        }
+        }*/
 
         public void Update(GameTime gameTime)
         {
@@ -104,7 +104,7 @@ namespace TiledLife.World
                 }
             }
 
-            if (blockUpdateQueue.Count == 0)
+            /*if (blockUpdateQueue.Count == 0)
             {
                 blockUpdateQueue = new UniqueQueue<Block>(nextBlockUpdateQueue);
                 nextBlockUpdateQueue.Clear();
@@ -114,44 +114,46 @@ namespace TiledLife.World
             {
                 Block block = blockUpdateQueue.Dequeue();
                 block.Update(gameTime);
-                UpdateTopmostBlock(block.localPosition.Col(), block.localPosition.Row());
-            }
+                UpdateTopmostBlock(block.localCol, block.localRow);
+            }*/
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            int offsetX = Map.TILE_WIDTH * Map.PIXELS_PER_METER * tileX;
-            int offsetY = Map.TILE_HEIGHT * Map.PIXELS_PER_METER * tileY;
+            int offsetX = Map.TILE_WIDTH * Map.BLOCK_WIDTH * tileX;
+            int offsetY = Map.TILE_HEIGHT * Map.BLOCK_HEIGHT * tileY;
 
-            if (depthMap == null)
+            if (depthMapTexture == null)
             {
-                depthMap = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
+                depthMapTexture = new Texture2D(spriteBatch.GraphicsDevice, Map.TILE_WIDTH, Map.TILE_HEIGHT);
             }
 
             for (int row = 0; row < Map.TILE_HEIGHT; row++)
             {
                 for (int col = 0; col < Map.TILE_WIDTH; col++)
                 {
-                    int depth = topmostBlocks[col, row];
+                    int depth = depthMap[col, row];
                     Block block = blocks[col, row, depth];
+
+                    Vector2 offset = new Vector2(
+                        (float)offsetX + (col * Map.BLOCK_WIDTH), 
+                        (float)offsetY + (row * Map.BLOCK_HEIGHT)
+                    );
                     
-                    block.Draw(spriteBatch, offsetX, offsetY);
+                    block.Draw(spriteBatch, offset);
                 }
             }
 
-            if (depthMapNeedsUpdate)
-            {
-                depthMap.SetData<Color>(colorData);
-                depthMapNeedsUpdate = false;
-            }
+            depthMapTexture.SetData<Color>(colorData);
+
 
             // Draw depth map
             spriteBatch.Draw(
-                depthMap, 
+                depthMapTexture, 
                 new Rectangle(
                     offsetX, offsetY, 
-                    Map.TILE_WIDTH*Map.PIXELS_PER_METER, 
-                    Map.TILE_HEIGHT*Map.PIXELS_PER_METER
+                    Map.TILE_WIDTH*Map.BLOCK_WIDTH, 
+                    Map.TILE_HEIGHT*Map.BLOCK_HEIGHT
                     ),
                 Color.White
             );
@@ -160,28 +162,6 @@ namespace TiledLife.World
             {
                 creature.Draw(spriteBatch, gameTime);
             }
-        }
-
-        // Get a position for spawning, like on a block of dirt
-        public Vector2 GetRandomValidPosition()
-        {
-            int maxNbOfTries = 10;
-            //int padding = 2;
-            for (int i = 0; i < maxNbOfTries; i++)
-            {
-                int col = RandomGen.GetInstance().Next(0, Map.TILE_WIDTH);
-                int row = RandomGen.GetInstance().Next(0, Map.TILE_HEIGHT);
-                /*if (blocks[row,col,0].CanWalkOn())
-                {
-                    return new Vector2(
-                        (col * Map.PIXELS_PER_METER) + padding + (tileX * Map.TILE_WIDTH * Map.PIXELS_PER_METER), 
-                        (row * Map.PIXELS_PER_METER) + padding + (tileY * Map.TILE_HEIGHT * Map.PIXELS_PER_METER)
-                    );
-                }*/
-            }
-
-            // Couldn't find a valid spawn location
-            return new Vector2(0, 0);
         }
 
         public AbstractCreature GetCreatureAtPixelPosition(float x, float y)
@@ -205,15 +185,13 @@ namespace TiledLife.World
         {
             for (int i = Map.TILE_DEPTH - 1; i >= 0; i--)
             {
-                if (blocks[col, row, i].GetMostCommonVisibleMaterial().phase != Material.Phase.Gas)
+                BlockSolid blockSolid = (blocks[col, row, i] as BlockSolid);
+                if (blockSolid != null)
                 {
-                    topmostBlocks[col, row] = i;
+                    depthMap[col, row] = i;
 
-                    // Update depth map
                     float darkness = 1 - ((float)i / Map.TILE_DEPTH);
-                    colorData[row*Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
-                    depthMapNeedsUpdate = true;
-
+                    colorData[row * Map.TILE_HEIGHT + col] = new Color(0f, 0f, 0f, darkness);
                     return;
                 }
             }
@@ -230,7 +208,7 @@ namespace TiledLife.World
             }
         }
 
-        public bool IsBlockPositionInTile(BlockPosition blockPosition)
+        /*public bool IsBlockPositionInTile(BlockPosition blockPosition)
         {
             return IsBlockPositionInTile(blockPosition.Col(), blockPosition.Row(), blockPosition.Depth());
         }
@@ -249,7 +227,7 @@ namespace TiledLife.World
                 depth >= 0 &&
                 depth < Map.TILE_DEPTH
             );
-        }
+        }*/
     }
 
 }

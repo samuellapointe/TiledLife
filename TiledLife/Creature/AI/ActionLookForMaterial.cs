@@ -41,7 +41,7 @@ namespace TiledLife.Creature.AI
 
             // How far to look
             float viewDistance = human.GetPhysicalAttr(DNA.PhysicalAttribute.ViewDistance);
-            float lookIncrement = Map.PIXELS_PER_METER * 0.75f;
+            float lookIncrement = Map.BLOCK_WIDTH * 0.75f;
             int nbPointsForward = (int)(viewDistance / lookIncrement);
 
             // Get the points we'll look at
@@ -82,8 +82,8 @@ namespace TiledLife.Creature.AI
                     {
                         Vector2 point = pointsToCheck.Dequeue();
                         //Map.GetInstance().AddDebugDot(point);
-                        Block block = Map.GetInstance().GetBlockAtPixelPosition(point.X, point.Y);
-                        /*if (block != null && block.material.name.Equals(materialName))
+                        /*Block block = Map.GetInstance().GetBlockAtPixelPosition(point.X, point.Y);
+                        if (block != null && block.material.name.Equals(materialName))
                         {
                             finalPosition = point;
                             currentStatus = Status.Success;

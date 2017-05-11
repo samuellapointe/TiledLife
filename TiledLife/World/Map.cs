@@ -23,7 +23,9 @@ namespace TiledLife.World
         public const int TILE_HEIGHT = 100;
         public const int TILE_WIDTH = 100;
         public const int TILE_DEPTH = 100;
-        public const int PIXELS_PER_METER = 8;
+
+        public const int BLOCK_WIDTH = 8;
+        public const int BLOCK_HEIGHT = 8;
 
         private Map()
         {
@@ -39,7 +41,7 @@ namespace TiledLife.World
             return map;
         }
 
-        public Block GetBlockAtPixelPosition(float x, float y)
+        /*public Block GetBlockAtPixelPosition(float x, float y)
         {
             Tile tile = GetTileFromPixelPosition(x, y);
 
@@ -58,9 +60,9 @@ namespace TiledLife.World
             // Get the block coordinates
             //Debug.Print("Map.cs: Tried to get a block somewhere empty");
             return null;
-        }
+        }*/
 
-        public Block GetBlockAt(BlockPosition blockPosition)
+        /*public Block GetBlockAt(BlockPosition blockPosition)
         {
             return GetBlockAt(blockPosition.Col(), blockPosition.Row(), blockPosition.Depth());
         }
@@ -80,7 +82,7 @@ namespace TiledLife.World
                 );
             }
             return null;
-        }
+        }*/
 
         public AbstractCreature GetCreatureAt(float x, float y)
         {
@@ -100,9 +102,9 @@ namespace TiledLife.World
         public void Initialize()
         {
             tiles.Add("0,0", new Tile(0, 0));
-            tiles.Add("0,1", new Tile(0, 1));
+            /*tiles.Add("0,1", new Tile(0, 1));
             tiles.Add("1,0", new Tile(1, 0));
-            tiles.Add("1,1", new Tile(1, 1));
+            tiles.Add("1,1", new Tile(1, 1));*/
             foreach (KeyValuePair<string, Tile> entry in tiles)
             {
                 entry.Value.Initialize();
@@ -149,8 +151,8 @@ namespace TiledLife.World
         private Tile GetTileFromPixelPosition(float x, float y)
         {
             // The position is a pixel. Turn into a block position;
-            int blockCol = (int)Math.Floor(x / PIXELS_PER_METER);
-            int blockRow = (int)Math.Floor(y / PIXELS_PER_METER);
+            int blockCol = (int)Math.Floor(x / BLOCK_WIDTH);
+            int blockRow = (int)Math.Floor(y / BLOCK_HEIGHT);
 
             // Find the tile containing that block
             return GetTileFromBlockPosition(blockCol, blockRow);
@@ -172,7 +174,7 @@ namespace TiledLife.World
             return null;
         }
 
-        private BlockPosition GetBlockPositionFromPixelPosition(float col, float row, float depth)
+        /*private BlockPosition GetBlockPositionFromPixelPosition(float col, float row, float depth)
         {
             // The position is a pixel. Turn into a block position;
             int blockCol = (int)Math.Floor(col / PIXELS_PER_METER);
@@ -192,6 +194,6 @@ namespace TiledLife.World
             int depthWithinTile = depth;
 
             return new BlockPosition(colWithinTile, rowWithinTile, depthWithinTile);
-        }
+        }*/
     }
 }

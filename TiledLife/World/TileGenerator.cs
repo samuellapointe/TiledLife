@@ -10,8 +10,22 @@ namespace TiledLife.World
     {
         public const int WATER_LEVEL = 64;
 
+        private static Material materialDirt;
+
+        private static bool initialized = false;
+
+        private static void InitializeMaterials()
+        {
+            materialDirt = MaterialManager.GetInstance().GetMaterial();
+            initialized = true;
+        }
+
         public static Block[,,] GenerateTile(int tileHeight, int tileWidth, int tileDepth, Tile tile)
         {
+            if (!initialized)
+            {
+                InitializeMaterials();
+            }
 
             Block[,,] blocks = new Block[tileHeight, tileWidth, tileDepth];
             float[,] depth1 = Simplex.Noise.Calc2D(tileWidth, tileHeight, 0.001f);
@@ -22,9 +36,9 @@ namespace TiledLife.World
             int offsetX = tile.tileX * Map.TILE_WIDTH;
             int offsetY = tile.tileY * Map.TILE_HEIGHT;
 
-            for (int i = 0; i < tileDepth; i++)
+            for (byte i = 0; i < tileDepth; i++)
             {
-                for (int j = 0; j < tileHeight; j++)
+                for (byte j = 0; j < tileHeight; j++)
                 {
                     int blockDepth1 = (int)Math.Round((depth1[i, j] / 512) * Map.TILE_DEPTH);
                     int blockDepth2 = (int)Math.Round((depth2[i, j] / 1024) * Map.TILE_DEPTH);
@@ -34,27 +48,25 @@ namespace TiledLife.World
 
                     for (int k = 0; k < tileWidth; k++)
                     {
-                        Dictionary<Material.Name, byte> contents = new Dictionary<Material.Name, byte>();
-             
                         if (k < blockDepth)
                         {
-                            contents.Add(Material.Name.Dirt, Material.FULL);
+                            blocks[i, j, k] = new BlockSolid(materialDirt);
                         }
-                        else if (i == 0 && j == 0)
+                        /*else if (i == 0 && j == 0)
                         //else if (k < WATER_LEVEL)
                         {
-                            contents.Add(Material.Name.Water, Material.FULL);
+                            material = Material.GetMaterial(Material.Name.Water);
                         }
                         else
                         {
-                            contents.Add(Material.Name.Air, Material.FULL);
-                        }
+                            material = Material.GetMaterial(Material.Name.None);
+                        }*/
 
-                        blocks[i, j, k] = new Block(
+                        /*blocks[i, j, k] = new Block(
                             new BlockPosition(i + offsetX, j + offsetY, k),
-                            new BlockPosition(i, j, k),
-                            contents, tile
-                        );
+                            i, j,
+                            material, tile
+                        );*/
                     }
                 }
             }
